@@ -6089,14 +6089,14 @@ function renderTablaRol(containerId, filas, registrados) {
       <td>${hecho
         ? '<span class="badge b-green">✓ Registrado</span>'
         : '<span class="badge b-gray">Pendiente</span>'}</td>
-      <td>${hecho ? '' : `<button class="btn btn-accent btn-xs" onclick="abrirModalRegistroTolva(${JSON.stringify(r).replace(/"/g,'&quot;')})">Registrar</button>`}</td>
+      <td>${hecho ? '' : `<button class="btn btn-accent btn-xs" data-tolva='${JSON.stringify(r).replace(/'/g,"&#39;")}' onclick="abrirModalRegistroTolva(JSON.parse(this.dataset.tolva))">Registrar</button>`}</td>
     </tr>`;
   }).join('') + '</tbody></table>';
 }
 
 function abrirSelectorLlamada() {
   const llamadas = _tolvasCacheRol.filter(
-    t => ['LLAMADA','POR LLAMADA'].includes(t.frecuencia.toUpperCase())
+    t => t.frecuencia && ['LLAMADA','POR LLAMADA'].includes(t.frecuencia.toUpperCase())
   );
   const sel = document.getElementById('sel-llamada-punto');
   sel.innerHTML = '<option value="" disabled selected>Seleccione…</option>';
