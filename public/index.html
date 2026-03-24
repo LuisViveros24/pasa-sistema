@@ -800,6 +800,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
             <option>Carlos González</option>
             <option>Manuel García</option>
             <option>Homero Elizalde</option>
+            <option>Miguel Vidaña</option>
           </select>
         </div>
       </div>
@@ -1888,6 +1889,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
             <option>Carlos González</option>
             <option>Manuel García</option>
             <option>Homero Elizalde</option>
+            <option>Miguel Vidaña</option>
           </select>
         </div>
         <div class="form-group">
@@ -4228,6 +4230,7 @@ async function cargarActDiario(){
   const boxPunto = document.getElementById('d-box-punto-tolva');
   const selPunto = document.getElementById('d-punto-tolva');
   if (serv === 'Tolvas y Contenedores') {
+    document.getElementById('d-responsable').value = 'Miguel Vidaña';
     try {
       const { data: tolvas } = await api('GET', '/tolvas?estado=activo&limit=200');
       selPunto.innerHTML = '<option value="" disabled selected>Seleccione punto…</option>';
@@ -6140,6 +6143,7 @@ function abrirModalRegistroTolva(tolvaRow) {
   _tolvaRowActual = tolvaRow;
   document.getElementById('rtv-punto-label').textContent =
     `${tolvaRow.folio} — ${tolvaRow.punto_servicio}`;
+  document.getElementById('rtv-responsable').value = 'Miguel Vidaña';
   document.getElementById('rtv-hora').value = new Date().toTimeString().slice(0, 5);
   document.getElementById('rtv-obs').value = '';
   // Limpiar fotos previas
