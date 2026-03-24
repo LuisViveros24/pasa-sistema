@@ -895,6 +895,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
     <button class="btn btn-outline" id="itab-reporte" onclick="setAudTab('captura'); setSupOrigen('reporte')" style="flex:1;min-width:140px;"><i class="fas fa-comment-alt"></i> Reporte Ciudadano</button>
     <button class="btn btn-outline" id="itab-independiente" onclick="setAudTab('captura'); setSupOrigen('independiente')" style="flex:1;min-width:120px;"><i class="fas fa-file-alt"></i> Independiente</button>
     <button class="btn btn-outline" id="itab-verificacion" onclick="setAudTab('verificacion')" style="flex:1;min-width:140px;"><i class="fas fa-clipboard-check"></i> Verificación pendiente</button>
+    <button class="btn btn-outline" id="itab-rol-tolvas" onclick="setAudTab('rol-tolvas')" style="flex:1;min-width:140px;"><i class="fas fa-trash-alt"></i> Rol de Tolvas</button>
   </div>
 
   <div class="folio-bar">
@@ -1042,6 +1043,27 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
         <button class="btn btn-accent btn-sm" onclick="renderVerifPendiente()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualizar</button>
       </div>
       <div id="tabla-verif-pendiente"></div>
+    </div>
+  </div>
+
+  <!-- Rol de Tolvas y Contenedores -->
+  <div id="aud-panel-rol-tolvas" style="display:none;">
+    <div class="sec-h" style="margin-bottom:12px;">
+      <h3 id="rol-tolvas-fecha-hdr" style="margin:0 0 4px;font-size:15px;"></h3>
+      <p id="rol-tolvas-contador" style="margin:0;font-size:12px;color:var(--muted);"></p>
+    </div>
+    <div class="section-box" style="margin-bottom:16px;">
+      <div class="section-box-title">📅 Programados hoy</div>
+      <div id="rol-tolvas-tabla-prog"></div>
+    </div>
+    <div class="section-box">
+      <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>📞 Agregados por llamada</span>
+        <button class="btn btn-sm btn-outline" onclick="abrirSelectorLlamada()">+ Agregar por llamada</button>
+      </div>
+      <div id="rol-tolvas-tabla-llamada">
+        <div class="empty" style="padding:12px;"><p style="font-size:12px;color:var(--muted);">Ninguno agregado aún</p></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1821,6 +1843,79 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
     <div class="modal-actions">
       <button class="btn btn-accent" id="btn-pdf-reunion">📄 Descargar Acta PDF</button>
       <button class="btn btn-outline" onclick="cerrarModal('modal-reunion-det')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: selector de tolva por llamada -->
+<div class="modal-overlay" id="modal-selector-llamada">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-hdr">
+      <h3>Agregar punto por llamada</h3>
+      <button class="m-close" onclick="cerrarModal('modal-selector-llamada')">✕</button>
+    </div>
+    <div style="padding:18px;">
+      <div class="form-group" style="margin-bottom:16px;">
+        <label>Punto de Servicio</label>
+        <select id="sel-llamada-punto" style="width:100%;">
+          <option value="" disabled selected>Seleccione…</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-accent" style="flex:1;" onclick="confirmarSelectorLlamada()">Agregar</button>
+        <button class="btn btn-outline" onclick="cerrarModal('modal-selector-llamada')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: registro de actividad de tolva -->
+<div class="modal-overlay" id="modal-registro-tolva">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-hdr">
+      <h3>Registrar actividad</h3>
+      <button class="m-close" onclick="cerrarModal('modal-registro-tolva')">✕</button>
+    </div>
+    <div style="padding:18px;">
+      <div style="background:var(--surface2);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:13px;">
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--yellow);display:block;margin-bottom:3px;">PUNTO DE SERVICIO</span>
+        <span id="rtv-punto-label" style="font-weight:700;"></span>
+      </div>
+      <div class="form-grid" style="margin-bottom:12px;">
+        <div class="form-group">
+          <label>Responsable *</label>
+          <select id="rtv-responsable">
+            <option>Carlos González</option>
+            <option>Manuel García</option>
+            <option>Homero Elizalde</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Hora *</label>
+          <input type="time" id="rtv-hora">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Observaciones</label>
+        <textarea id="rtv-obs" rows="2" placeholder="Notas opcionales…"></textarea>
+      </div>
+      <div class="foto-grid" style="margin-bottom:16px;">
+        <div class="foto-drop" onclick="document.getElementById('rtv-foto1').click()">
+          <input type="file" id="rtv-foto1" accept="image/*" style="display:none" onchange="prevFoto(this,'rtv-prev1','rtv-ph1')">
+          <div class="foto-ph" id="rtv-ph1"><i class="fas fa-camera" style="color:var(--accent);"></i><span>ANTES</span></div>
+          <img id="rtv-prev1" class="f-prev" style="display:none">
+          <div class="foto-badge" style="background:rgba(217,119,6,.8);">Antes</div>
+        </div>
+        <div class="foto-drop" onclick="document.getElementById('rtv-foto2').click()">
+          <input type="file" id="rtv-foto2" accept="image/*" style="display:none" onchange="prevFoto(this,'rtv-prev2','rtv-ph2')">
+          <div class="foto-ph" id="rtv-ph2"><i class="fas fa-check-circle" style="color:var(--green);"></i><span>DESPUÉS</span></div>
+          <img id="rtv-prev2" class="f-prev" style="display:none">
+          <div class="foto-badge" style="background:rgba(63,185,80,.8);">Después</div>
+        </div>
+      </div>
+      <button class="btn btn-accent" style="width:100%;" onclick="guardarRegistroTolva()">
+        <i class="fas fa-paper-plane"></i> Guardar y subir a Drive
+      </button>
     </div>
   </div>
 </div>
