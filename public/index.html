@@ -4142,9 +4142,11 @@ async function cargarActDiario(){
         selPunto.appendChild(opt);
       });
       boxPunto.style.display = '';
-    } catch(_) {}
+      selPunto.required = true;
+    } catch(_) { flash('Error al cargar puntos de servicio'); }
   } else {
     boxPunto.style.display = 'none';
+    selPunto.required = false;
     selPunto.value = '';
   }
 }
@@ -4193,6 +4195,7 @@ async function guardarDiario(e){
     document.getElementById('form-diario').reset();
     document.getElementById('d-box-actividades').style.display='none';
     document.getElementById('d-box-unidad').style.display='none';
+    document.getElementById('d-box-punto-tolva').style.display='none';
     renderDiarioTable();
     renderDashboard();
     flash(`Registro ${created.folio} guardado ✔`);
