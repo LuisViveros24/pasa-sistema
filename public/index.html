@@ -813,6 +813,12 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
           <option>Barrido Selectivo</option><option>Barrido Mecánico</option><option>Carga Trasera</option>
         </select>
       </div>
+      <div id="d-box-punto-tolva" style="display:none;margin-bottom:12px;">
+        <label style="font-family:var(--font-mono);font-size:10px;color:var(--yellow);">Punto de Servicio *</label>
+        <select id="d-punto-tolva" required>
+          <option value="" disabled selected>Seleccione punto…</option>
+        </select>
+      </div>
       <div id="d-box-unidad" style="display:none;margin-bottom:12px;">
         <label style="font-family:var(--font-mono);font-size:10px;color:var(--blue);">Número Económico de la Unidad *</label>
         <input type="number" id="d-unidad" placeholder="Ej. 254" style="border-color:rgba(88,166,255,.4);background:rgba(88,166,255,.06);color:var(--blue);">
@@ -4122,6 +4128,25 @@ async function cargarActDiario(){
     const el = document.getElementById('diario-folio-display');
     if (el) el.textContent = folio;
   } catch(_) {}
+  // Dropdown de punto de servicio para Tolvas y Contenedores
+  const boxPunto = document.getElementById('d-box-punto-tolva');
+  const selPunto = document.getElementById('d-punto-tolva');
+  if (serv === 'Tolvas y Contenedores') {
+    try {
+      const { data: tolvas } = await api('GET', '/tolvas?estado=activo&limit=200');
+      selPunto.innerHTML = '<option value="" disabled selected>Seleccione punto…</option>';
+      tolvas.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.punto_servicio;
+        opt.textContent = `${t.folio} — ${t.punto_servicio}`;
+        selPunto.appendChild(opt);
+      });
+      boxPunto.style.display = '';
+    } catch(_) {}
+  } else {
+    boxPunto.style.display = 'none';
+    selPunto.value = '';
+  }
 }
 
 function prevFoto(input,imgId,phId){
@@ -4154,6 +4179,7 @@ async function guardarDiario(e){
     fd.append('numero',        document.getElementById('d-numero').value||'S/N');
     fd.append('actividades',   acts||'Sin especificar');
     fd.append('observaciones', document.getElementById('d-obs').value);
+    fd.append('punto_tolva', document.getElementById('d-punto-tolva')?.value || '');
     const f1=document.getElementById('d-foto1-inp')?.files?.[0];
     const f2=document.getElementById('d-foto2-inp')?.files?.[0];
     if(f1) fd.append('foto1',f1);
