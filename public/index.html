@@ -5970,7 +5970,7 @@ function setAudTab(tab) {
   const miniNav      = document.querySelector('#tab-auditoria > div:first-of-type');
 
   // Reset all inner tab buttons to outline
-  ['itab-diario','itab-reporte','itab-independiente'].forEach(id => {
+  ['itab-diario','itab-reporte','itab-independiente','itab-rol-tolvas'].forEach(id => {
     const btn = document.getElementById(id);
     if (!btn) return;
     btn.style.cssText = 'flex:1;min-width:140px;';
@@ -5981,6 +5981,21 @@ function setAudTab(tab) {
     btnVerif.style.cssText = 'flex:1;min-width:140px;';
     btnVerif.classList.remove('btn-accent');
     btnVerif.classList.add('btn-outline');
+  }
+
+  if (tab === 'rol-tolvas') {
+    if (panelCaptura) panelCaptura.style.display = 'none';
+    if (tblCaptura)   tblCaptura.style.display   = 'none';
+    if (folioBar)     folioBar.style.display      = 'none';
+    if (panelVerif)   panelVerif.style.display    = 'none';
+    document.getElementById('aud-panel-rol-tolvas').style.display = '';
+    const btnRol = document.getElementById('itab-rol-tolvas');
+    if (btnRol) {
+      btnRol.style.cssText = 'flex:1;min-width:140px;background:var(--accent);color:#000;font-weight:700;border:2px solid var(--accent);';
+      btnRol.classList.remove('btn-outline');
+    }
+    renderRolTolvas();
+    return;
   }
 
   if (tab === 'verificacion') {
@@ -5998,7 +6013,82 @@ function setAudTab(tab) {
     if (tblCaptura)   tblCaptura.style.display   = '';
     if (folioBar)     folioBar.style.display      = '';
     if (panelVerif)   panelVerif.style.display    = 'none';
+    document.getElementById('aud-panel-rol-tolvas').style.display = 'none';
   }
+}
+
+// ─── Rol de Tolvas ──────────────────────────────────────────────────────────
+let _rolLlamadasHoy = [];  // puntos por llamada agregados en la sesión actual
+let _tolvasCacheRol = [];  // caché de tolvas activos para el selector de llamada
+let _tolvaRowActual = null; // fila pendiente de registrar en modal-registro-tolva
+
+function esHoyTolva(frecuencia) {
+  const diasES = ['DOMINGO','LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'];
+  const hoy = diasES[new Date().getDay()];
+  const f = frecuencia.toUpperCase()
+    .replace(/MIÉRCOLES/g, 'MIERCOLES')
+    .replace(/SÁBADO/g, 'SABADO')
+    .replace(/\bY\b/g, ',');
+  if (f.trim() === 'DIARIO') return true;
+  if (f.trim() === 'LUNES A VIERNES') return ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES'].includes(hoy);
+  return f.split(',').map(s => s.trim()).includes(hoy);
+}
+
+async function renderRolTolvas() {
+  try {
+    // 1. Cargar todos los tolvas activos (y guardar caché para el selector de llamada)
+    const { data: tolvas } = await api('GET', '/tolvas?estado=activo&limit=200');
+    _tolvasCacheRol = tolvas;
+
+    // 2. Filtrar programados para hoy
+    const programados = tolvas.filter(t => esHoyTolva(t.frecuencia));
+
+    // 3. Cargar registros de diario de hoy para saber cuáles ya están registrados
+    const hoy = new Date().toISOString().slice(0, 10);
+    const { data: diarioHoy } = await api('GET', `/diario?fechaIni=${hoy}&fechaFin=${hoy}&limit=200`);
+    const registrados = new Set(
+      diarioHoy
+        .filter(r => r.servicio === 'Tolvas y Contenedores' && r.punto_tolva)
+        .map(r => r.punto_tolva)
+    );
+
+    // 4. Encabezado
+    document.getElementById('rol-tolvas-fecha-hdr').textContent =
+      `Rol del día — ${new Date().toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}`;
+    document.getElementById('rol-tolvas-contador').textContent =
+      `${programados.length} puntos programados · ${registrados.size} registrados`;
+
+    // 5. Tablas
+    renderTablaRol('rol-tolvas-tabla-prog', programados, registrados);
+    renderTablaRol('rol-tolvas-tabla-llamada', _rolLlamadasHoy, registrados);
+  } catch(e) {
+    console.error('renderRolTolvas:', e);
+  }
+}
+
+function renderTablaRol(containerId, filas, registrados) {
+  const cont = document.getElementById(containerId);
+  if (!cont) return;
+  if (!filas.length) {
+    cont.innerHTML = '<div class="empty" style="padding:12px;"><p style="font-size:12px;color:var(--muted);">Sin puntos para mostrar</p></div>';
+    return;
+  }
+  cont.innerHTML = `<table><thead><tr>
+    <th>Folio</th><th>Tipo</th><th>Punto de Servicio</th><th>Ubicación</th><th>Estado</th><th></th>
+  </tr></thead><tbody>` +
+  filas.map(r => {
+    const hecho = registrados.has(r.punto_servicio);
+    return `<tr>
+      <td class="mono">${r.folio}</td>
+      <td><span class="badge b-gray">${r.tipo}</span></td>
+      <td style="font-weight:600;">${r.punto_servicio}</td>
+      <td style="font-size:11px;color:var(--muted);">${r.ubicacion||'—'}</td>
+      <td>${hecho
+        ? '<span class="badge b-green">✓ Registrado</span>'
+        : '<span class="badge b-gray">Pendiente</span>'}</td>
+      <td>${hecho ? '' : `<button class="btn btn-accent btn-xs" onclick="abrirModalRegistroTolva(${JSON.stringify(r).replace(/"/g,'&quot;')})">Registrar</button>`}</td>
+    </tr>`;
+  }).join('') + '</tbody></table>';
 }
 
 async function renderVerifPendiente() {
