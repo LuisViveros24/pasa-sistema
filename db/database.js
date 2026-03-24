@@ -379,6 +379,11 @@ db.serialize(() => {
   });
   db.run('ALTER TABLE auditorias ADD COLUMN num_eco TEXT', () => {});
 
+  // Migración: punto_tolva en diario
+  db.run(`ALTER TABLE diario ADD COLUMN punto_tolva TEXT`, err => {
+    if (err && !err.message.includes('duplicate column')) console.error('Migración diario (punto_tolva):', err.message);
+  });
+
   // Seed tolvas — 147 puntos de servicio (Excel "GENERAL")
   db.get('SELECT COUNT(*) as n FROM tolvas', (err, row) => {
     if (err || row.n > 0) return;

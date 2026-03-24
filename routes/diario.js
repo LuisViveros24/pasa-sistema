@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
     if (fechaFin) { where += ` AND fecha <= ?`; params.push(fechaFin); }
     const rows = await db.all_p(
       `SELECT id,folio,fecha,hora,responsable,servicio,unidad,gps,colonia,calle,numero,
-              actividades,observaciones,foto1,foto2,auditado,created_at
+              actividades,observaciones,foto1,foto2,auditado,punto_tolva,created_at
        FROM diario ${where} ORDER BY fecha DESC, id DESC LIMIT ? OFFSET ?`,
       [...params, parseInt(limit), off]
     );
@@ -69,11 +69,11 @@ router.post('/', upload.fields([{name:'foto1',maxCount:1},{name:'foto2',maxCount
     const foto1 = req.files?.foto1?.[0]?.filename || null;
     const foto2 = req.files?.foto2?.[0]?.filename || null;
     const result = await db.run_p(
-      `INSERT INTO diario (folio,fecha,hora,responsable,servicio,unidad,gps,colonia,calle,numero,actividades,observaciones,foto1,foto2)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO diario (folio,fecha,hora,responsable,servicio,unidad,gps,colonia,calle,numero,actividades,observaciones,foto1,foto2,punto_tolva)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [ b.folio, b.fecha||null, b.hora||null, b.responsable||null, b.servicio||null,
         b.unidad||null, b.gps||null, b.colonia||null, b.calle||null, b.numero||null,
-        b.actividades||null, b.observaciones||null, foto1, foto2 ]
+        b.actividades||null, b.observaciones||null, foto1, foto2, b.punto_tolva||null ]
     );
     const created = await db.get_p('SELECT * FROM diario WHERE id = ?', [result.lastID]);
     res.status(201).json(created);
@@ -95,11 +95,11 @@ router.put('/:id', async (req, res) => {
     const b = req.body;
     const r = await db.run_p(
       `UPDATE diario SET fecha=?,hora=?,responsable=?,servicio=?,unidad=?,
-         gps=?,colonia=?,calle=?,numero=?,actividades=?,observaciones=?
+         gps=?,colonia=?,calle=?,numero=?,actividades=?,observaciones=?,punto_tolva=?
        WHERE id=?`,
       [ b.fecha||null, b.hora||null, b.responsable||null, b.servicio||null,
         b.unidad||null, b.gps||null, b.colonia||null, b.calle||null, b.numero||null,
-        b.actividades||null, b.observaciones||null, req.params.id ]
+        b.actividades||null, b.observaciones||null, b.punto_tolva||null, req.params.id ]
     );
     if (r.changes === 0) return res.status(404).json({ error: 'No encontrado' });
     const updated = await db.get_p('SELECT * FROM diario WHERE id = ?', [req.params.id]);
