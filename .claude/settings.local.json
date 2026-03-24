@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(lsof -ti :3000)",
+      "Bash(kill 1614 8289)",
+      "Bash(node server.js)",
+      "Bash(node -e \"require\\(''./server.js''\\)\")",
+      "Bash(sqlite3 /Users/viverosmunoz/Desktop/pasa-sistema/pasa.db \"SELECT usuario, rol FROM usuarios LIMIT 5;\")",
+      "Bash(sqlite3 /Users/viverosmunoz/Desktop/pasa-sistema/pasa.db \"SELECT usuario, password FROM usuarios WHERE usuario=''admin'';\")"
+    ]
+  }
+}
