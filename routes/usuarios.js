@@ -2,6 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const db      = require('../db/database');
 const crypto  = require('crypto');
+const { sessions } = require('./auth');
 
 const ROLES = ['administrador','supervisor','pesaje','auditor','enlace'];
 
@@ -84,6 +85,15 @@ router.put('/:id', async (req, res) => {
       'SELECT id, usuario, nombre, rol, modulos, activo, ultimo_acceso FROM usuarios WHERE id=?',
       [id]
     );
+    // Actualizar sesión activa del usuario si existe, para que los cambios
+    // surtan efecto sin necesidad de cerrar e iniciar sesión
+    for (const [token, sess] of sessions) {
+      if (sess.id === id) {
+        sess.nombre  = updated.nombre;
+        sess.rol     = updated.rol;
+        sess.modulos = updated.modulos || null;
+      }
+    }
     res.json(updated);
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
