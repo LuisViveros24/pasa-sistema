@@ -6023,6 +6023,7 @@ let _tolvasCacheRol = [];  // caché de tolvas activos para el selector de llama
 let _tolvaRowActual = null; // fila pendiente de registrar en modal-registro-tolva
 
 function esHoyTolva(frecuencia) {
+  if (!frecuencia) return false;
   const diasES = ['DOMINGO','LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'];
   const hoy = diasES[new Date().getDay()];
   const f = frecuencia.toUpperCase()
@@ -6063,6 +6064,8 @@ async function renderRolTolvas() {
     renderTablaRol('rol-tolvas-tabla-llamada', _rolLlamadasHoy, registrados);
   } catch(e) {
     console.error('renderRolTolvas:', e);
+    const cont = document.getElementById('rol-tolvas-tabla-prog');
+    if (cont) cont.innerHTML = `<div style="color:var(--red);padding:16px;">Error al cargar: ${e.message}</div>`;
   }
 }
 
