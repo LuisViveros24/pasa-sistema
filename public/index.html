@@ -6094,6 +6094,129 @@ function renderTablaRol(containerId, filas, registrados) {
   }).join('') + '</tbody></table>';
 }
 
+function abrirSelectorLlamada() {
+  const llamadas = _tolvasCacheRol.filter(
+    t => ['LLAMADA','POR LLAMADA'].includes(t.frecuencia.toUpperCase())
+  );
+  const sel = document.getElementById('sel-llamada-punto');
+  sel.innerHTML = '<option value="" disabled selected>Seleccione…</option>';
+  llamadas.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.punto_servicio;
+    opt.textContent = `${t.folio} — ${t.punto_servicio}`;
+    opt.dataset.json = JSON.stringify(t);
+    sel.appendChild(opt);
+  });
+  document.getElementById('modal-selector-llamada').classList.add('open');
+}
+
+function confirmarSelectorLlamada() {
+  const sel = document.getElementById('sel-llamada-punto');
+  if (!sel.value) return;
+  const yaExiste = _rolLlamadasHoy.some(t => t.punto_servicio === sel.value);
+  if (yaExiste) {
+    flash('Este punto ya fue agregado');
+    cerrarModal('modal-selector-llamada');
+    return;
+  }
+  const opt = sel.options[sel.selectedIndex];
+  const tolvaRow = JSON.parse(opt.dataset.json);
+  _rolLlamadasHoy.push(tolvaRow);
+  cerrarModal('modal-selector-llamada');
+  // Re-renderizar la sección de llamadas
+  const hoy = new Date().toISOString().slice(0, 10);
+  api('GET', `/diario?fechaIni=${hoy}&fechaFin=${hoy}&limit=200`)
+    .then(({ data }) => {
+      const registrados = new Set(
+        data.filter(r => r.servicio === 'Tolvas y Contenedores' && r.punto_tolva)
+            .map(r => r.punto_tolva)
+      );
+      renderTablaRol('rol-tolvas-tabla-llamada', _rolLlamadasHoy, registrados);
+    })
+    .catch(() => renderTablaRol('rol-tolvas-tabla-llamada', _rolLlamadasHoy, new Set()));
+}
+
+function abrirModalRegistroTolva(tolvaRow) {
+  _tolvaRowActual = tolvaRow;
+  document.getElementById('rtv-punto-label').textContent =
+    `${tolvaRow.folio} — ${tolvaRow.punto_servicio}`;
+  document.getElementById('rtv-hora').value = new Date().toTimeString().slice(0, 5);
+  document.getElementById('rtv-obs').value = '';
+  // Limpiar fotos previas
+  ['rtv-prev1','rtv-prev2'].forEach(id => {
+    const img = document.getElementById(id);
+    if (img) { img.style.display = 'none'; img.src = ''; }
+  });
+  ['rtv-ph1','rtv-ph2'].forEach(id => {
+    const ph = document.getElementById(id);
+    if (ph) ph.style.display = '';
+  });
+  // Limpiar los inputs de archivo
+  ['rtv-foto1','rtv-foto2'].forEach(id => {
+    const inp = document.getElementById(id);
+    if (inp) inp.value = '';
+  });
+  document.getElementById('modal-registro-tolva').classList.add('open');
+}
+
+async function guardarRegistroTolva() {
+  if (!_tolvaRowActual) return;
+  const tolvaRow = _tolvaRowActual;
+  showLoader('Guardando registro…');
+  try {
+    const hoy = new Date().toISOString().slice(0, 10);
+    const { folio } = await api('GET', '/diario/siguiente-folio?servicio=Tolvas%20y%20Contenedores');
+
+    const fd = new FormData();
+    fd.append('folio',         folio);
+    fd.append('fecha',         hoy);
+    fd.append('hora',          document.getElementById('rtv-hora').value);
+    fd.append('responsable',   document.getElementById('rtv-responsable').value);
+    fd.append('servicio',      'Tolvas y Contenedores');
+    fd.append('punto_tolva',   tolvaRow.punto_servicio);
+    fd.append('unidad',        'N/A');
+    fd.append('colonia',       tolvaRow.ubicacion || tolvaRow.punto_servicio);
+    fd.append('calle',         '');
+    fd.append('numero',        'S/N');
+    fd.append('actividades',   'Recolección');
+    fd.append('observaciones', document.getElementById('rtv-obs').value);
+
+    const f1 = document.getElementById('rtv-foto1').files?.[0];
+    const f2 = document.getElementById('rtv-foto2').files?.[0];
+    if (f1) fd.append('foto1', f1);
+    if (f2) fd.append('foto2', f2);
+
+    const created = await api('POST', '/diario', fd, true);
+    cerrarModal('modal-registro-tolva');
+    flash(`Registro ${created.folio} guardado ✔`);
+
+    // Generar PDF y subir a Drive (mismo flujo que guardarDiario)
+    const img1 = created.foto1 ? `/uploads/${created.foto1}` : '';
+    const img2 = created.foto2 ? `/uploads/${created.foto2}` : '';
+    await buildDiarioPDF({
+      folio:       created.folio,
+      fecha:       created.fecha,
+      hora:        created.hora,
+      responsable: created.responsable,
+      servicio:    created.servicio,
+      punto_tolva: created.punto_tolva,
+      unidad:      created.unidad,
+      gps:         '',
+      colonia:     created.colonia,
+      calle:       created.calle,
+      numero:      created.numero,
+      actividades: created.actividades,
+      obs:         created.observaciones
+    }, img1, img2);
+
+    // Refrescar panel — await para que hideLoader no salte antes
+    await renderRolTolvas();
+  } catch(err) {
+    alert('Error: ' + err.message);
+  }
+  hideLoader();
+}
+
 async function renderVerifPendiente() {
   const cont = document.getElementById('tabla-verif-pendiente');
   if (!cont) return;
