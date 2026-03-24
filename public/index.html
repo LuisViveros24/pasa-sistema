@@ -1982,6 +1982,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
         <div class="pmi"><div class="pmi-l">GPS</div><div class="pmi-v" id="pdf-gps" style="font-size:9px;font-family:monospace;"></div></div>
         <div class="pmi pspan2"><div class="pmi-l">Colonia</div><div class="pmi-v" id="pdf-colonia"></div></div>
         <div class="pmi pspan2"><div class="pmi-l">Calle</div><div class="pmi-v" id="pdf-calle"></div></div>
+        <div class="pmi pspan2" id="pdf-row-punto-tolva"><div class="pmi-l">Punto de Servicio</div><div class="pmi-v" id="pdf-punto-tolva"></div></div>
       </div>
       <div><div class="pmi-l" style="margin-left:4px;margin-bottom:5px;">ACTIVIDADES Y OBSERVACIONES</div><div class="pobs"><p id="pdf-acts"></p></div></div>
       <div class="pevid">
@@ -4280,6 +4281,7 @@ async function buildDiarioPDF(d,img1,img2){
   document.getElementById('pdf-unidad').textContent=d.unidad!=='N/A'?d.unidad:'—';
   document.getElementById('pdf-colonia').textContent=d.colonia||'—';
   document.getElementById('pdf-calle').textContent=`${d.calle||'—'} #${d.numero||'S/N'}`;
+  document.getElementById('pdf-punto-tolva').textContent = d.punto_tolva || '—';
   document.getElementById('pdf-acts').textContent=(d.actividades||'Sin especificar')+(d.obs?'\n\nObs: '+d.obs:'');
   document.getElementById('pdf-gps').textContent=d.gps||'—';
   document.getElementById('pdf-ts').textContent=new Date().toLocaleString();
