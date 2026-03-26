@@ -2292,7 +2292,7 @@ function applyRoles(rol, modulos) {
 function setSession(token, nombre, rol, modulos) {
   authToken      = token;
   currentRol     = rol;
-  currentModulos = modulos ? (typeof modulos === 'string' ? JSON.parse(modulos) : modulos) : null;
+  currentModulos = (rol === 'administrador') ? null : (modulos ? (typeof modulos === 'string' ? JSON.parse(modulos) : modulos) : null);
   if (token) {
     localStorage.setItem('pasa_token', token);
     document.getElementById('tb-nombre').textContent = nombre;
