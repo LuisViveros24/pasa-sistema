@@ -4369,6 +4369,28 @@ async function exportDiarioPDFById(id){
   } catch(err){ alert('Error al generar PDF: '+err.message); }
 }
 
+// Comprime una imagen (src string) a máx. maxW×maxH px y calidad JPEG dada
+async function comprimirImgPDF(src, maxW=800, maxH=800, q=0.75) {
+  if (!src) return '';
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      let w = img.naturalWidth, h = img.naturalHeight;
+      if (w > maxW || h > maxH) {
+        const ratio = Math.min(maxW/w, maxH/h);
+        w = Math.round(w*ratio); h = Math.round(h*ratio);
+      }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(c.toDataURL('image/jpeg', q));
+    };
+    img.onerror = () => resolve(src); // si falla, usar original
+    img.src = src;
+  });
+}
+
 async function buildDiarioPDF(d,img1,img2){
   showLoader('Generando PDF...');
   document.getElementById('pdf-folio').textContent=d.folio;
@@ -4383,23 +4405,27 @@ async function buildDiarioPDF(d,img1,img2){
   document.getElementById('pdf-acts').textContent=(d.actividades||'Sin especificar')+(d.obs?'\n\nObs: '+d.obs:'');
   document.getElementById('pdf-gps').textContent=d.gps||'—';
   document.getElementById('pdf-ts').textContent=new Date().toLocaleString();
+  // Comprimir fotos antes de incrustarlas (Opción B)
+  const [c1, c2] = await Promise.all([
+    comprimirImgPDF(img1), comprimirImgPDF(img2)
+  ]);
   const pImg1 = document.getElementById('pdf-img1');
   const pImg2 = document.getElementById('pdf-img2');
-  pImg1.src = img1 || '';
-  pImg2.src = img2 || '';
+  pImg1.src = c1 || '';
+  pImg2.src = c2 || '';
   // Esperar carga real de imágenes antes de capturar con html2canvas
   await Promise.all([pImg1, pImg2].map(el => {
-    if (!img1 && !img2) return Promise.resolve();
+    if (!c1 && !c2) return Promise.resolve();
     if (!el.src || el.src === window.location.href) return Promise.resolve();
     if (el.complete && el.naturalWidth > 0) return Promise.resolve();
     return new Promise(res => { el.onload = res; el.onerror = res; });
   }));
-  await new Promise(r=>setTimeout(r,150));
+  await new Promise(r=>setTimeout(r,100));
   const filename = `DiarioAct_${d.folio.replace(/\//g,'-')}.pdf`;
   const pdfWorker = html2pdf().set({
     margin:0, filename,
-    image:{type:'jpeg',quality:.95},
-    html2canvas:{scale:2,useCORS:true,scrollY:0},
+    image:{type:'jpeg',quality:.80},
+    html2canvas:{scale:1.5,useCORS:true,scrollY:0},
     jsPDF:{unit:'mm',format:'letter',orientation:'portrait'}
   }).from(document.getElementById('hojaPDF'));
 
