@@ -47,6 +47,7 @@ app.use('/api/penalidades', requireAuth, require('./routes/penalidades'));
 app.use('/api/usuarios',       requireAuth, require('./routes/usuarios'));
 app.use('/api/conciliaciones', requireAuth, require('./routes/conciliaciones'));
 app.use('/api/config',         requireAuth, require('./routes/config'));
+app.use('/api/lista-negra',   requireAuth, require('./routes/lista_negra'));
 
 // Ruta de salud (útil para verificar que el server corre)
 app.get('/api/health', (req, res) => {

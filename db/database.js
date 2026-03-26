@@ -384,6 +384,18 @@ db.serialize(() => {
     if (err && !err.message.includes('duplicate column')) console.error('Migración diario (punto_tolva):', err.message);
   });
 
+  // Tabla Lista Negra
+  db.run(`CREATE TABLE IF NOT EXISTS lista_negra (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    fecha       TEXT,
+    colonia     TEXT,
+    unidad      TEXT,
+    infraccion  TEXT,
+    responsable TEXT,
+    observacion TEXT,
+    created_at  TEXT DEFAULT (datetime('now','localtime'))
+  )`, err => { if(err) console.error('lista_negra table:', err.message); });
+
   // Seed tolvas — 147 puntos de servicio (Excel "GENERAL")
   db.get('SELECT COUNT(*) as n FROM tolvas', (err, row) => {
     if (err || row.n > 0) return;

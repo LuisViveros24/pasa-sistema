@@ -446,6 +446,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 
   <div class="sb-section" data-roles="administrador">Administración</div>
   <div class="nav-item" data-roles="administrador" onclick="nav('usuarios',this)"><span class="ni">👥</span> Usuarios del Sistema</div>
+  <div class="nav-item" data-roles="administrador" onclick="nav('lista-negra',this)"><span class="ni">⛔</span> Lista Negra</div>
 </nav>
 
 <!-- ══════════ CONTENT ══════════ -->
@@ -1783,6 +1784,25 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   </div>
 </div>
 
+<!-- ═══════════════════════════ LISTA NEGRA ═══════════════════════════ -->
+<div class="tab-panel" id="tab-lista-negra">
+  <div class="folio-bar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span class="table-title" style="color:var(--red,#e74c3c);">⛔ Lista Negra</span>
+    <input id="ln-q" class="form-control" style="max-width:220px;" placeholder="Buscar…" oninput="renderListaNegra()">
+    <button class="btn" onclick="abrirFormLN(null)" style="background:var(--accent);color:#000;font-weight:700;"><i class="fas fa-plus"></i> Nuevo Registro</button>
+    <button class="btn btn-outline" onclick="verResumenLN()"><i class="fas fa-chart-bar"></i> Reporte</button>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr>
+        <th>Fecha</th><th>Colonia</th><th>Unidad</th><th>Infracción</th>
+        <th>Responsable</th><th>Observación</th><th>Acciones</th>
+      </tr></thead>
+      <tbody id="ln-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
 </main>
 </div><!-- /layout -->
 
@@ -2436,7 +2456,7 @@ function cerrarModal(id){ document.getElementById(id).classList.remove('open'); 
 // ── NAVEGACIÓN ───────────────────────────────────────────────
 // Módulos permitidos por rol
 const ROL_ACCESO = {
-  administrador: ['dashboard','bascula','diario','auditoria','rutas','tolvas','penalidades','sanciones','clausulas','organismo','multas','exportar','reportes','usuarios'],
+  administrador: ['dashboard','bascula','diario','auditoria','rutas','tolvas','penalidades','sanciones','clausulas','organismo','multas','exportar','reportes','usuarios','lista-negra'],
   supervisor:    ['diario','rutas','tolvas'],
   pesaje:        ['bascula'],
   auditor:       ['auditoria'],
@@ -2466,6 +2486,7 @@ function nav(name, el){
   if(name==='tolvas')     renderTolvasTable();
   if(name==='reportes')   renderReportesTable();
   if(name==='usuarios')   abrirModuloUsuarios();
+  if(name==='lista-negra') renderListaNegra();
 }
 
 // ════ INIT ════
@@ -6600,6 +6621,154 @@ async function generarReporteEjecutivo() {
   hideLoader();
 }
 
+// ══════════════════════════ LISTA NEGRA ══════════════════════════
+async function renderListaNegra() {
+  const q = document.getElementById('ln-q')?.value || '';
+  try {
+    const { data } = await api('GET', `/lista-negra?q=${encodeURIComponent(q)}&limit=500`);
+    const tbody = document.getElementById('ln-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = data.length === 0
+      ? `<tr><td colspan="7" style="text-align:center;color:var(--muted);">Sin registros</td></tr>`
+      : data.map(r => `
+        <tr>
+          <td>${r.fecha||'—'}</td>
+          <td>${r.colonia||'—'}</td>
+          <td>${r.unidad||'—'}</td>
+          <td>${r.infraccion||'—'}</td>
+          <td><strong>${r.responsable||'—'}</strong></td>
+          <td>${r.observacion||'—'}</td>
+          <td>
+            <button class="btn btn-sm btn-outline" onclick="abrirFormLN(${r.id})"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-outline" style="color:var(--red,#e74c3c)" onclick="eliminarRegistroLN(${r.id})"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>`).join('');
+  } catch(e) { flash('Error al cargar lista negra'); }
+}
+
+function abrirFormLN(id) {
+  document.getElementById('ln-edit-id').value = id || '';
+  document.getElementById('ln-modal-title').textContent = id ? 'Editar Registro' : 'Nuevo Registro — Lista Negra';
+  ['ln-fecha','ln-colonia','ln-unidad','ln-infraccion','ln-responsable','ln-observacion'].forEach(i => {
+    const el = document.getElementById(i); if(el) el.value = '';
+  });
+  if (id) {
+    api('GET', `/lista-negra?limit=1000`).then(async ({ data }) => {
+      const r = data.find(x => x.id === id);
+      if (!r) return;
+      const set = (elId, val) => { const el = document.getElementById(elId); if(el) el.value = val||''; };
+      set('ln-fecha', r.fecha); set('ln-colonia', r.colonia); set('ln-unidad', r.unidad);
+      set('ln-infraccion', r.infraccion); set('ln-responsable', r.responsable); set('ln-observacion', r.observacion);
+    });
+  }
+  document.getElementById('modal-ln').classList.add('open');
+}
+
+function cerrarModalLN() {
+  document.getElementById('modal-ln').classList.remove('open');
+}
+
+async function guardarRegistroLN() {
+  const id = document.getElementById('ln-edit-id').value;
+  const body = {
+    fecha:       document.getElementById('ln-fecha').value,
+    colonia:     document.getElementById('ln-colonia').value.trim(),
+    unidad:      document.getElementById('ln-unidad').value.trim(),
+    infraccion:  document.getElementById('ln-infraccion').value.trim(),
+    responsable: document.getElementById('ln-responsable').value.trim(),
+    observacion: document.getElementById('ln-observacion').value.trim(),
+  };
+  if (!body.fecha || !body.colonia || !body.infraccion || !body.responsable) {
+    flash('Completa los campos obligatorios'); return;
+  }
+  try {
+    if (id) await api('PUT', `/lista-negra/${id}`, body);
+    else     await api('POST', '/lista-negra', body);
+    cerrarModalLN();
+    await renderListaNegra();
+    flash(id ? 'Registro actualizado' : 'Registro guardado');
+  } catch(e) { flash('Error al guardar'); }
+}
+
+async function eliminarRegistroLN(id) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  try {
+    await api('DELETE', `/lista-negra/${id}`);
+    await renderListaNegra();
+    flash('Registro eliminado');
+  } catch(e) { flash('Error al eliminar'); }
+}
+
+async function verResumenLN() {
+  try {
+    const data = await api('GET', '/lista-negra/resumen');
+    const rows = Array.isArray(data) ? data : (data.data || data);
+    const tbody = document.getElementById('ln-resumen-tbody');
+    tbody.innerHTML = rows.length === 0
+      ? `<tr><td colspan="2" style="text-align:center;color:var(--muted);">Sin datos</td></tr>`
+      : rows.map(r => `<tr><td><strong>${r.responsable}</strong></td><td style="text-align:center;">${r.total}</td></tr>`).join('');
+    document.getElementById('modal-ln-resumen').classList.add('open');
+  } catch(e) { flash('Error al cargar reporte'); }
+}
+
 </script>
+
+<!-- Modal Lista Negra -->
+<div class="modal-overlay" id="modal-ln">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-hdr">
+      <h3 id="ln-modal-title">Nuevo Registro — Lista Negra</h3>
+      <button class="m-close" onclick="cerrarModalLN()">✕</button>
+    </div>
+    <div style="display:grid;gap:10px;">
+      <input type="hidden" id="ln-edit-id">
+      <div>
+        <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block;">Fecha *</label>
+        <input class="form-control" type="date" id="ln-fecha">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block;">Colonia *</label>
+        <input class="form-control" id="ln-colonia" placeholder="Nombre de la colonia">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block;">Unidad</label>
+        <input class="form-control" id="ln-unidad" placeholder="Número de unidad / placas">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block;">Infracción *</label>
+        <input class="form-control" id="ln-infraccion" placeholder="Tipo de infracción cometida">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block;">Responsable *</label>
+        <input class="form-control" id="ln-responsable" placeholder="Nombre completo del responsable">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block;">Observación</label>
+        <textarea class="form-control" id="ln-observacion" rows="3" placeholder="Notas adicionales…"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="cerrarModalLN()">Cancelar</button>
+      <button class="btn btn-accent" onclick="guardarRegistroLN()"><i class="fas fa-save"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Reporte Lista Negra -->
+<div class="modal-overlay" id="modal-ln-resumen">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-hdr">
+      <h3>Reporte — Infracciones por Responsable</h3>
+      <button class="m-close" onclick="cerrarModal('modal-ln-resumen')">✕</button>
+    </div>
+    <div>
+      <table class="data-table">
+        <thead><tr><th>Responsable</th><th style="text-align:center;">Infracciones</th></tr></thead>
+        <tbody id="ln-resumen-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
