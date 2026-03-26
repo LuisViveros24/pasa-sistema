@@ -1773,6 +1773,8 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
           <option value="073">073</option>
         </select>
         <button class="btn btn-accent btn-sm" onclick="abrirNuevoReporte()"><i class="fas fa-plus"></i> Nuevo Reporte</button>
+        <input type="file" id="rep-pdf-input" accept=".pdf" style="display:none" onchange="importarReportePDF(this)">
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('rep-pdf-input').click()"><i class="fas fa-file-pdf"></i> Importar PDF</button>
         <button class="btn btn-outline btn-sm" onclick="abrirImportarReportes()"><i class="fas fa-file-excel"></i> Importar 073</button>
         <input type="file" id="rp-import-input" accept=".xlsx,.xls" style="display:none" onchange="procesarArchivoReportes(this)">
       </div>
@@ -2694,6 +2696,55 @@ function cancelarNuevoReporte(){
   document.getElementById('form-reporte').reset();
   toggleFolio073('Whatsapp');
   ['prev-rp-a1','prev-rp-a2'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=''; });
+}
+
+async function importarReportePDF(input) {
+  const file = input.files[0];
+  if (!file) return;
+  input.value = '';
+  showLoader('Leyendo PDF…');
+  try {
+    const fd = new FormData();
+    fd.append('pdf', file);
+    const r = await fetch(API + '/reportes/parsear-pdf', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + authToken },
+      body: fd
+    });
+    const data = await r.json();
+    if (!r.ok) { flash(data.error || 'Error al leer PDF'); return; }
+    // Abrir el formulario de nuevo reporte y pre-llenar campos
+    await abrirNuevoReporte();
+    // Dar tiempo a que el form se muestre
+    await new Promise(res => setTimeout(res, 150));
+    const set = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+    // El folio lo asigna abrirNuevoReporte(), el de 073 va en rp-folio-073
+    // Para usar folio 073, setear origen a '073' y mostrar el campo
+    const origenEl = document.getElementById('rp-origen');
+    if (origenEl) {
+      origenEl.value = '073';
+      toggleFolio073('073');
+    }
+    set('rp-folio-073', data.folio_073);
+    set('rp-fecha', data.fecha);
+    set('rp-hora', data.hora);
+    set('rp-nombre', data.nombre);
+    set('rp-calle', data.calle);
+    set('rp-gps', data.gps);
+    set('rp-descripcion', data.descripcion);
+    // rp-colonia es un select — intentar seleccionar por texto
+    const colSelect = document.getElementById('rp-colonia');
+    if (colSelect && data.colonia) {
+      const colUpper = data.colonia.toUpperCase();
+      const opt = [...colSelect.options].find(o => o.value.toUpperCase() === colUpper || o.text.toUpperCase().includes(colUpper));
+      if (opt) colSelect.value = opt.value;
+    }
+    flash('PDF importado — revisa y confirma los datos', 'success');
+  } catch(e) {
+    flash('Error al importar PDF');
+  } finally {
+    hideLoader();
+  }
 }
 
 function toggleFolio073(valor){

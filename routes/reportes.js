@@ -9,6 +9,7 @@ const storage = multer.diskStorage({
   filename:    (req, file, cb) => cb(null, `reporte_${Date.now()}_${file.fieldname}${path.extname(file.originalname)}`)
 });
 const upload = multer({ storage, limits: { fileSize: 15*1024*1024 } });
+const uploadMemory = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10*1024*1024 } });
 
 // ── Siguiente folio ───────────────────────────────────────────
 router.get('/siguiente-folio', async (req, res) => {
@@ -36,6 +37,64 @@ router.get('/', async (req, res) => {
     const { n: total } = await db.get_p(`SELECT COUNT(*) as n FROM reportes ${where}`, params);
     res.json({ data: rows, total });
   } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Parsear PDF de Plataforma de Atención Ciudadana ───────────
+router.post('/parsear-pdf', uploadMemory.single('pdf'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No se recibió archivo' });
+    const pdfParse = require('pdf-parse');
+    const { text } = await pdfParse(req.file.buffer);
+
+    // Helper
+    const get = (re) => { const m = text.match(re); return m ? m[1].trim() : ''; };
+
+    // Folio AT-XXXXX
+    const folio_073 = get(/FOLIO:\s*\n*(AT-\d+)/i) || get(/(AT-\d{3,})/);
+
+    // Fecha de alta
+    const fechaStr = get(/Fecha de alta:\s*([^\n]+)/i);
+    const meses = {ene:1,feb:2,mar:3,abr:4,may:5,jun:6,jul:7,ago:8,sep:9,oct:10,nov:11,dic:12};
+    let fecha = '', hora = '';
+    const mf = fechaStr.match(/(\d+)\s+(\w+)\s+(\d{4}),?\s*(\d+):(\d+)\s*(a\.m\.|p\.m\.)/i);
+    if (mf) {
+      const [,d,mes,y,hh,mm,ap] = mf;
+      const mn = meses[mes.toLowerCase().substring(0,3)] || 1;
+      fecha = `${y}-${String(mn).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      let h = parseInt(hh);
+      if (/p\.m\./i.test(ap) && h !== 12) h += 12;
+      if (/a\.m\./i.test(ap) && h === 12) h = 0;
+      hora = `${String(h).padStart(2,'0')}:${mm}`;
+    }
+
+    // Descripción del Problema (hasta Evidencia o línea vacía larga)
+    const descM = text.match(/Descripci[oó]n del Problema\s*\n([\s\S]*?)(?=\n(?:Evidencia|Informaci[oó]n de Tiempo|P[áa]gina \d))/i);
+    let descripcion = descM ? descM[1].trim() : '';
+
+    // Referencias (agregar al final de descripcion)
+    const ref = get(/Referencias\s*\n([^\n]+)/i);
+    if (ref) descripcion += `\n\nReferencias: ${ref}`;
+
+    // Reportante
+    const nombre = get(/Reportante\s*\n([^\n]+)/i);
+
+    // Calle
+    const calle = get(/Calle\s*\n([^\n]+)/i);
+
+    // Colonia
+    const colonia = get(/Colonia\s*\n([^\n]+)/i);
+
+    // Coordenadas
+    const gps = get(/Coordenadas\s*\n([^\n]+)/i);
+
+    // Origen
+    const origen = get(/Origen\s*\n([^\n]+)/i) || 'Web';
+
+    res.json({ folio_073, fecha, hora, nombre, calle, colonia, gps, descripcion, origen });
+  } catch(e) {
+    console.error('parsear-pdf:', e.message);
+    res.status(500).json({ error: 'No se pudo leer el PDF: ' + e.message });
+  }
 });
 
 // ── Un reporte por ID ─────────────────────────────────────────
