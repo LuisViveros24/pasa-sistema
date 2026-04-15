@@ -386,8 +386,8 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   .sidebar {
     display: block !important;   /* sobreescribe el display:none anterior */
     position: fixed;
-    top: 0; left: 0;
-    height: 100vh;
+    top: var(--topbar-h, 52px); left: 0;
+    height: calc(100vh - var(--topbar-h, 52px));
     z-index: 200;
     transform: translateX(-100%);
     transition: transform 0.25s ease;
@@ -7897,6 +7897,10 @@ async function fetchIncSugerencias(q) {
   }, 300);
 }
 
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 async function loadIncidencias() {
   const q        = document.getElementById('inc-search')?.value || '';
   const fechaIni = document.getElementById('inc-fecha-ini')?.value || '';
@@ -7925,11 +7929,11 @@ async function loadIncidencias() {
         `<a href="${f}" target="_blank"><img src="${f}" style="height:36px;border-radius:3px;margin:1px;"></a>`
       ).join('') || '—';
       return `<tr>
-        <td>${r.folio}</td>
+        <td>${esc(r.folio)}</td>
         <td>${r.fecha}</td>
         <td>${r.hora}</td>
-        <td>${r.reportado_por}</td>
-        <td>${r.descripcion}</td>
+        <td>${esc(r.reportado_por)}</td>
+        <td>${esc(r.descripcion)}</td>
         <td>${mapsLink}</td>
         <td>${fotos}</td>
         <td><button class="btn-icon" onclick="eliminarIncidencia(${r.id})">🗑</button></td>
