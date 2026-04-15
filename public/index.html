@@ -371,6 +371,44 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 #tb-user strong{color:var(--text);}
 #btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 10px;border-radius:20px;font-size:10px;cursor:pointer;font-family:var(--font-mono);}
 #btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+/* ── Mobile drawer ─────────────────────────────────────────── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 199;
+}
+.sidebar-overlay.open { display: block; }
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: block !important;   /* sobreescribe el display:none anterior */
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .hamburger-btn { display: flex !important; }
+}
+
+.hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-right: 8px;
+}
 </style>
 </head>
 <body>
@@ -400,6 +438,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 <!-- ══════════ TOPBAR ══════════ -->
 <div class="topbar">
   <div class="tb-left">
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menú">&#9776;</button>
     <div class="logo">DSP</div>
     <div class="tb-title">Sistema Integral CEA
       <span>R. Ayuntamiento de Torreón · Dirección de Limpieza</span>
@@ -421,6 +460,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 <div class="layout">
 
 <!-- ══════════ SIDEBAR ══════════ -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 <nav class="sidebar">
   <div class="sb-section" data-roles="administrador">Principal</div>
   <div class="nav-item active" data-roles="administrador" onclick="nav('dashboard',this)"><span class="ni">📊</span> Dashboard</div>
@@ -808,6 +848,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
             <option>Carlos González</option>
             <option>Manuel García</option>
             <option>Homero Elizalde</option>
+            <option>Heber Portillo</option>
             <option>Miguel Vidaña</option>
           </select>
         </div>
@@ -2364,6 +2405,15 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 //  Frontend — consume API REST local en lugar de localStorage
 // ════════════════════════════════════════════════════════
 
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
 const API = '/api';   // mismo origen — sin CORS issues
 
 // ── Google Drive ─────────────────────────────────────────────────
@@ -2630,6 +2680,7 @@ const ROL_ACCESO = {
 };
 
 function nav(name, el){
+  closeSidebar();
   // Control de acceso por rol / módulos personalizados
   const permitidos = getPermitidos();
   if (currentRol && !permitidos.includes(name)) return;
@@ -3753,7 +3804,7 @@ function _formDiario(r){
     </div>
     <div class="form-group fg-span2"><label>Responsable CEA *</label>
       <select id="ed-responsable" required>
-        ${['Edgar Flores','Jorge Sanchez','Roberto Alvarado','Carlos González','Manuel García','Homero Elizalde'].map(n=>`<option${r.responsable===n?' selected':''}>${n}</option>`).join('')}
+        ${['Edgar Flores','Jorge Sanchez','Roberto Alvarado','Carlos González','Manuel García','Homero Elizalde','Heber Portillo'].map(n=>`<option${r.responsable===n?' selected':''}>${n}</option>`).join('')}
       </select>
     </div>
     <div class="form-group"><label>Tipo de Servicio *</label>
