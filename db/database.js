@@ -258,6 +258,8 @@ const SCHEMA = `
   CREATE INDEX IF NOT EXISTS idx_penalidades_folio   ON penalidades(folio);
   CREATE INDEX IF NOT EXISTS idx_penalidades_estado  ON penalidades(estado);
   CREATE INDEX IF NOT EXISTS idx_penalidades_tipo    ON penalidades(tipo);
+  CREATE INDEX IF NOT EXISTS idx_incidencias_folio   ON incidencias(folio);
+  CREATE INDEX IF NOT EXISTS idx_incidencias_fecha   ON incidencias(fecha);
 
   CREATE TABLE IF NOT EXISTS ordenes_trabajo (
     id                   INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -300,7 +302,7 @@ const SCHEMA = `
     lat           REAL,
     lng           REAL,
     fotos_json    TEXT DEFAULT '[]',
-    created_at    TEXT DEFAULT (datetime('now','localtime'))
+    created_at    TEXT NOT NULL DEFAULT (datetime('now','localtime'))
   );
 `;
 
