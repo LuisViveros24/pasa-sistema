@@ -49,6 +49,7 @@ app.use('/api/conciliaciones', requireAuth, require('./routes/conciliaciones'));
 app.use('/api/config',         requireAuth, require('./routes/config'));
 app.use('/api/lista-negra',   requireAuth, require('./routes/lista_negra'));
 app.use('/api/ordenes',       requireAuth, require('./routes/ordenes'));
+app.use('/api/incidencias',   requireAuth, require('./routes/incidencias'));
 
 // Ruta de salud (útil para verificar que el server corre)
 app.get('/api/health', (req, res) => {
