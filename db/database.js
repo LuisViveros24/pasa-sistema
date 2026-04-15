@@ -289,6 +289,19 @@ const SCHEMA = `
   );
   INSERT OR IGNORE INTO configuracion (clave, valor) VALUES ('uma_valor', '108.57');
   INSERT OR IGNORE INTO configuracion (clave, valor) VALUES ('auditorias_meta_mensual', '8');
+
+  CREATE TABLE IF NOT EXISTS incidencias (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    folio         TEXT NOT NULL UNIQUE,
+    fecha         TEXT NOT NULL,
+    hora          TEXT NOT NULL,
+    reportado_por TEXT NOT NULL,
+    descripcion   TEXT NOT NULL,
+    lat           REAL,
+    lng           REAL,
+    fotos_json    TEXT DEFAULT '[]',
+    created_at    TEXT DEFAULT (datetime('now','localtime'))
+  );
 `;
 
 // Ejecutar schema y luego seed si actas está vacía
