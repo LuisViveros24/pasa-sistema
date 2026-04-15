@@ -409,6 +409,22 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   padding: 4px 8px;
   margin-right: 8px;
 }
+
+/* ── Tabs internos (Diario) ─────────────────────────────────── */
+.inner-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 2px solid var(--accent); }
+.inner-tab {
+  padding: 7px 18px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 4px 4px 0 0;
+}
+.inner-tab.active { background: var(--accent); color: #000; }
+.inner-panel { display: none; }
+.inner-panel.active { display: block; }
 </style>
 </head>
 <body>
@@ -828,6 +844,15 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 <!-- ═══ DIARIO DE ACTIVIDADES ═══ -->
 <div class="tab-panel" id="tab-diario">
   <div class="sec-h"><h2>Diario de Actividades</h2><p>El responsable CEA captura las actividades de cada servicio realizado</p></div>
+
+  <!-- Pestañas -->
+  <div class="inner-tabs">
+    <button class="inner-tab active" onclick="switchDiarioTab('bitacora', this)">📝 Bitácora</button>
+    <button class="inner-tab" onclick="switchDiarioTab('incidencias', this)">⚠️ Incidencias</button>
+  </div>
+
+  <!-- Panel Bitácora -->
+  <div class="inner-panel active" id="diario-panel-bitacora">
   <div class="folio-bar">
     <div class="folio-num" id="diario-folio-display">DLM/GEN/0001</div>
     <div class="folio-meta"><strong>Registro Operativo de Campo</strong><p>Cada registro queda disponible para su evaluación en Auditorías</p></div>
@@ -952,6 +977,113 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
     </div>
     <div id="tabla-diario"></div>
   </div>
+  </div><!-- /inner-panel bitacora -->
+
+  <!-- Panel Incidencias -->
+  <div class="inner-panel" id="diario-panel-incidencias">
+    <div class="form-grid">
+      <!-- Folio (solo lectura) -->
+      <div class="form-group">
+        <label>Folio</label>
+        <input type="text" id="inc-folio" readonly placeholder="Se genera automáticamente" style="opacity:.6">
+      </div>
+
+      <!-- Fecha y Hora -->
+      <div class="form-group">
+        <label>Fecha *</label>
+        <input type="date" id="inc-fecha" required>
+      </div>
+      <div class="form-group">
+        <label>Hora *</label>
+        <input type="time" id="inc-hora" required>
+      </div>
+
+      <!-- Reportado por -->
+      <div class="form-group fg-span2">
+        <label>Reportado por *</label>
+        <select id="inc-responsable" required>
+          <option value="">-- Seleccionar --</option>
+          <option>Edgar Flores</option>
+          <option>Jorge Sanchez</option>
+          <option>Roberto Alvarado</option>
+          <option>Carlos González</option>
+          <option>Manuel García</option>
+          <option>Homero Elizalde</option>
+          <option>Heber Portillo</option>
+          <option>Miguel Vidaña</option>
+        </select>
+      </div>
+
+      <!-- Descripción con autocomplete -->
+      <div class="form-group fg-span2">
+        <label>Descripción de la incidencia *</label>
+        <input type="text" id="inc-descripcion" list="inc-sugerencias-list"
+               placeholder="Describe la incidencia..." required
+               oninput="fetchIncSugerencias(this.value)">
+        <datalist id="inc-sugerencias-list"></datalist>
+      </div>
+
+      <!-- Ubicación -->
+      <div class="form-group fg-span2">
+        <label>Ubicación</label>
+        <button type="button" class="btn btn-secondary" onclick="obtenerUbicacionInc()">
+          📍 Obtener mi ubicación
+        </button>
+        <div id="inc-map" style="height:200px;margin-top:8px;border-radius:6px;display:none;"></div>
+        <div id="inc-coords" style="margin-top:6px;font-size:12px;color:var(--text-muted);display:none;">
+          <span id="inc-lat-lng"></span>
+          &nbsp;·&nbsp;
+          <a id="inc-gmaps-link" href="#" target="_blank" rel="noopener">Abrir en Google Maps</a>
+        </div>
+        <input type="hidden" id="inc-lat">
+        <input type="hidden" id="inc-lng">
+      </div>
+
+      <!-- Fotos -->
+      <div class="form-group">
+        <label>Foto 1</label>
+        <input type="file" name="fotos" id="inc-foto1" accept="image/*" capture="environment"
+               onchange="previewIncFoto(this, 'inc-preview1')">
+        <img id="inc-preview1" style="display:none;max-width:100%;margin-top:6px;border-radius:4px;">
+      </div>
+      <div class="form-group">
+        <label>Foto 2 (opcional)</label>
+        <input type="file" name="fotos" id="inc-foto2" accept="image/*" capture="environment"
+               onchange="previewIncFoto(this, 'inc-preview2')">
+        <img id="inc-preview2" style="display:none;max-width:100%;margin-top:6px;border-radius:4px;">
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <button class="btn btn-primary" onclick="guardarIncidencia()">💾 Guardar Incidencia</button>
+    </div>
+
+    <hr style="margin:20px 0;border-color:var(--border);">
+    <div class="table-filters">
+      <input type="text" id="inc-search" placeholder="Buscar incidencias..."
+             oninput="loadIncidencias()" style="min-width:200px;">
+      <input type="date" id="inc-fecha-ini" onchange="loadIncidencias()">
+      <input type="date" id="inc-fecha-fin" onchange="loadIncidencias()">
+    </div>
+    <div class="table-wrap">
+      <table id="inc-tabla">
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Reportado por</th>
+            <th>Descripción</th>
+            <th>Ubicación</th>
+            <th>Fotos</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="inc-tbody"></tbody>
+      </table>
+    </div>
+  </div><!-- /inner-panel incidencias -->
+
 </div>
 
 <!-- ═══ AUDITORÍAS ═══ -->
@@ -2638,6 +2770,9 @@ const RUBROS = [
 // ── Estado local (solo UI, no persistencia) ───────────────────
 let audResp = {};
 let mapD, markerD;
+let incMap = null;
+let incMarker = null;
+let _incSugTimer = null;
 let currentActaId = null;
 let currentReunionId = null;
 
@@ -7630,6 +7765,186 @@ async function imprimirComprobacion(){
   } finally {
     btn.disabled=false; btn.innerHTML='<i class="fas fa-file-pdf"></i> Generar PDF';
   }
+}
+
+// ── INCIDENCIAS ───────────────────────────────────────────────
+
+function switchDiarioTab(tab, btn) {
+  document.querySelectorAll('#tab-diario .inner-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#tab-diario .inner-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(`diario-panel-${tab}`).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'incidencias') {
+    const hoy = new Date();
+    document.getElementById('inc-fecha').value = hoy.toISOString().slice(0,10);
+    document.getElementById('inc-hora').value  = hoy.toTimeString().slice(0,5);
+    fetchIncSugerencias('');
+    loadIncidencias();
+  }
+}
+
+function previewIncFoto(input, previewId) {
+  const preview = document.getElementById(previewId);
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function obtenerUbicacionInc() {
+  if (!navigator.geolocation) return alert('Tu navegador no soporta geolocalización.');
+  navigator.geolocation.getCurrentPosition(pos => {
+    setIncUbicacion(pos.coords.latitude, pos.coords.longitude);
+  }, () => alert('No se pudo obtener la ubicación. Verifica los permisos.'));
+}
+
+function setIncUbicacion(lat, lng) {
+  document.getElementById('inc-lat').value = lat;
+  document.getElementById('inc-lng').value = lng;
+  document.getElementById('inc-lat-lng').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+  document.getElementById('inc-gmaps-link').href = `https://www.google.com/maps?q=${lat},${lng}`;
+  document.getElementById('inc-coords').style.display = 'block';
+
+  const mapDiv = document.getElementById('inc-map');
+  mapDiv.style.display = 'block';
+
+  if (!incMap) {
+    incMap = L.map('inc-map').setView([lat, lng], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(incMap);
+    incMarker = L.marker([lat, lng], { draggable: true }).addTo(incMap);
+    incMarker.on('dragend', e => {
+      const pos = e.target.getLatLng();
+      setIncUbicacion(pos.lat, pos.lng);
+    });
+  } else {
+    incMap.setView([lat, lng], 16);
+    incMarker.setLatLng([lat, lng]);
+  }
+  setTimeout(() => incMap.invalidateSize(), 100);
+}
+
+async function guardarIncidencia() {
+  const fecha        = document.getElementById('inc-fecha').value;
+  const hora         = document.getElementById('inc-hora').value;
+  const responsable  = document.getElementById('inc-responsable').value;
+  const descripcion  = document.getElementById('inc-descripcion').value.trim();
+  const lat          = document.getElementById('inc-lat').value;
+  const lng          = document.getElementById('inc-lng').value;
+  const foto1        = document.getElementById('inc-foto1').files[0];
+  const foto2        = document.getElementById('inc-foto2').files[0];
+
+  if (!fecha || !hora || !responsable || !descripcion) {
+    return alert('Completa los campos obligatorios: Fecha, Hora, Reportado por y Descripción.');
+  }
+
+  const fd = new FormData();
+  fd.append('fecha',         fecha);
+  fd.append('hora',          hora);
+  fd.append('reportado_por', responsable);
+  fd.append('descripcion',   descripcion);
+  if (lat) fd.append('lat', lat);
+  if (lng) fd.append('lng', lng);
+  if (foto1) fd.append('fotos', foto1);
+  if (foto2) fd.append('fotos', foto2);
+
+  try {
+    const res = await fetch('/api/incidencias', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${authToken}` },
+      body: fd
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al guardar');
+    alert(`Incidencia guardada. Folio: ${data.folio}`);
+    resetFormIncidencias();
+    loadIncidencias();
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+function resetFormIncidencias() {
+  ['inc-foto1','inc-foto2'].forEach(id => document.getElementById(id).value = '');
+  ['inc-preview1','inc-preview2'].forEach(id => {
+    const el = document.getElementById(id);
+    el.src = ''; el.style.display = 'none';
+  });
+  document.getElementById('inc-descripcion').value = '';
+  document.getElementById('inc-responsable').value = '';
+  document.getElementById('inc-lat').value = '';
+  document.getElementById('inc-lng').value = '';
+  document.getElementById('inc-coords').style.display = 'none';
+  document.getElementById('inc-map').style.display = 'none';
+  if (incMap) { incMap.remove(); incMap = null; incMarker = null; }
+  const hoy = new Date();
+  document.getElementById('inc-fecha').value = hoy.toISOString().slice(0,10);
+  document.getElementById('inc-hora').value  = hoy.toTimeString().slice(0,5);
+}
+
+async function fetchIncSugerencias(q) {
+  clearTimeout(_incSugTimer);
+  _incSugTimer = setTimeout(async () => {
+    try {
+      const res  = await fetch(`/api/incidencias/sugerencias?q=${encodeURIComponent(q)}`,
+        { headers: { 'Authorization': `Bearer ${authToken}` } });
+      const list = await res.json();
+      const dl   = document.getElementById('inc-sugerencias-list');
+      dl.innerHTML = list.map(s => `<option value="${s.replace(/"/g,'&quot;')}">`).join('');
+    } catch (_) {}
+  }, 300);
+}
+
+async function loadIncidencias() {
+  const q        = document.getElementById('inc-search')?.value || '';
+  const fechaIni = document.getElementById('inc-fecha-ini')?.value || '';
+  const fechaFin = document.getElementById('inc-fecha-fin')?.value || '';
+  const params   = new URLSearchParams();
+  if (q)        params.set('q', q);
+  if (fechaIni) params.set('fecha_ini', fechaIni);
+  if (fechaFin) params.set('fecha_fin', fechaFin);
+
+  try {
+    const res  = await fetch(`/api/incidencias?${params}`,
+      { headers: { 'Authorization': `Bearer ${authToken}` } });
+    const rows = await res.json();
+    const tbody = document.getElementById('inc-tbody');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted)">Sin registros</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => {
+      const mapsLink = (r.lat && r.lng)
+        ? `<a href="https://www.google.com/maps?q=${r.lat},${r.lng}" target="_blank" rel="noopener">
+             📍 ${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)}
+           </a>`
+        : '—';
+      const fotos = (r.fotos || []).map(f =>
+        `<a href="${f}" target="_blank"><img src="${f}" style="height:36px;border-radius:3px;margin:1px;"></a>`
+      ).join('') || '—';
+      return `<tr>
+        <td>${r.folio}</td>
+        <td>${r.fecha}</td>
+        <td>${r.hora}</td>
+        <td>${r.reportado_por}</td>
+        <td>${r.descripcion}</td>
+        <td>${mapsLink}</td>
+        <td>${fotos}</td>
+        <td><button class="btn-icon" onclick="eliminarIncidencia(${r.id})">🗑</button></td>
+      </tr>`;
+    }).join('');
+  } catch (e) { console.error(e); }
+}
+
+async function eliminarIncidencia(id) {
+  if (!confirm('¿Eliminar esta incidencia?')) return;
+  await fetch(`/api/incidencias/${id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${authToken}` }
+  });
+  loadIncidencias();
 }
 
 </script>
