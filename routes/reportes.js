@@ -4,8 +4,9 @@ const path    = require('path');
 const multer  = require('multer');
 const db      = require('../db/database');
 
+const { UPLOADS_DIR } = require('../paths');
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, '..', 'uploads')),
+  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
   filename:    (req, file, cb) => cb(null, `reporte_${Date.now()}_${file.fieldname}${path.extname(file.originalname)}`)
 });
 const upload = multer({ storage, limits: { fileSize: 15*1024*1024 } });
@@ -43,8 +44,10 @@ router.get('/', async (req, res) => {
 router.post('/parsear-pdf', uploadMemory.single('pdf'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No se recibió archivo' });
-    const pdfParse = require('pdf-parse');
-    const { text } = await pdfParse(req.file.buffer);
+    const { PDFParse } = require('pdf-parse');
+    const parser = new PDFParse({ data: req.file.buffer });
+    const { text } = await parser.getText();
+    await parser.destroy();
 
     // Helper
     const get = (re) => { const m = text.match(re); return m ? m[1].trim() : ''; };
@@ -95,6 +98,34 @@ router.post('/parsear-pdf', uploadMemory.single('pdf'), async (req, res) => {
     console.error('parsear-pdf:', e.message);
     res.status(500).json({ error: 'No se pudo leer el PDF: ' + e.message });
   }
+});
+
+// ── GET /api/reportes/vencidos — abiertos >24h sin cerrar ────
+router.get('/vencidos', async (req, res) => {
+  try {
+    const rows = await db.all_p(
+      `SELECT * FROM reportes
+       WHERE estado='abierto'
+         AND datetime(fecha||' '||COALESCE(hora,'00:00')) < datetime('now','localtime','-24 hours')
+       ORDER BY fecha ASC, hora ASC`
+    );
+    res.json({ data: rows, total: rows.length });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── PATCH /api/reportes/:id/programar ────────────────────────
+router.patch('/:id/programar', async (req, res) => {
+  try {
+    const { fecha_programada } = req.body;
+    if (!fecha_programada) return res.status(400).json({ error: 'fecha_programada es requerida' });
+    const r = await db.run_p(
+      `UPDATE reportes SET fecha_programada=?, estado='EN_PROCESO' WHERE id=?`,
+      [fecha_programada, req.params.id]
+    );
+    if (r.changes === 0) return res.status(404).json({ error: 'No encontrado' });
+    const updated = await db.get_p('SELECT * FROM reportes WHERE id=?', [req.params.id]);
+    res.json(updated);
+  } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
 // ── Un reporte por ID ─────────────────────────────────────────

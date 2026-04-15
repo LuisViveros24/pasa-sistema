@@ -4,8 +4,9 @@ const path    = require('path');
 const multer  = require('multer');
 const db      = require('../db/database');
 
+const { UPLOADS_DIR } = require('../paths');
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, '..', 'uploads')),
+  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
   filename:    (req, file, cb) => cb(null, `acta_${Date.now()}_${file.fieldname}${path.extname(file.originalname)}`)
 });
 const upload = multer({ storage, limits: { fileSize: 15*1024*1024 } });

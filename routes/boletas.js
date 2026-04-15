@@ -39,6 +39,32 @@ router.get('/', async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
+// GET /api/boletas/stats/resumen — totales del día o rango
+router.get('/stats/resumen', async (req, res) => {
+  try {
+    const { fecha = new Date().toLocaleDateString('en-CA') } = req.query;
+    const [porTipo, conteoUnidades, totalDia] = await Promise.all([
+      db.all_p(
+        `SELECT tipo_servicio, COUNT(*) as viajes,
+                ROUND(SUM(peso_neto),3) as neto_ton,
+                ROUND(AVG(peso_neto),3) as prom_ton
+         FROM boletas WHERE fecha_entrada = ? GROUP BY tipo_servicio ORDER BY neto_ton DESC`,
+        [fecha]
+      ),
+      db.get_p(
+        `SELECT COUNT(DISTINCT num_eco) as unidades FROM boletas WHERE fecha_entrada = ?`,
+        [fecha]
+      ),
+      db.get_p(
+        `SELECT COUNT(*) as viajes, ROUND(SUM(peso_neto),3) as neto_ton FROM boletas WHERE fecha_entrada = ?`,
+        [fecha]
+      ),
+    ]);
+    res.json({ fecha, por_tipo: porTipo, unidades: conteoUnidades.unidades,
+               total_viajes: totalDia.viajes, total_neto: totalDia.neto_ton });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
 // GET /api/boletas/:id
 router.get('/:id', async (req, res) => {
   try {

@@ -4,14 +4,13 @@
  */
 
 const sqlite3 = require('sqlite3').verbose();
-const path    = require('path');
 const crypto  = require('crypto');
 
 function hashPassword(password, salt) {
   return crypto.scryptSync(password, salt, 64).toString('hex');
 }
 
-const DB_PATH = path.join(__dirname, '..', 'pasa.db');
+const { DB_PATH } = require('../paths');
 const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) { console.error('Error abriendo base de datos:', err.message); process.exit(1); }
 });
@@ -260,6 +259,29 @@ const SCHEMA = `
   CREATE INDEX IF NOT EXISTS idx_penalidades_estado  ON penalidades(estado);
   CREATE INDEX IF NOT EXISTS idx_penalidades_tipo    ON penalidades(tipo);
 
+  CREATE TABLE IF NOT EXISTS ordenes_trabajo (
+    id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+    folio                TEXT    NOT NULL,
+    fecha                TEXT,
+    hora                 TEXT,
+    emitida_por          TEXT,
+    dirigida_a           TEXT,
+    tipo                 TEXT,
+    prioridad            TEXT    NOT NULL DEFAULT 'NORMAL',
+    descripcion          TEXT,
+    zona                 TEXT,
+    colonia              TEXT,
+    fecha_limite         TEXT,
+    estado               TEXT    NOT NULL DEFAULT 'PENDIENTE',
+    folio_diario         TEXT,
+    folio_auditoria      TEXT,
+    observaciones_cierre TEXT,
+    fecha_atencion       TEXT,
+    created_at           TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_ot_folio  ON ordenes_trabajo(folio);
+  CREATE INDEX IF NOT EXISTS idx_ot_estado ON ordenes_trabajo(estado);
+
   CREATE TABLE IF NOT EXISTS configuracion (
     clave      TEXT PRIMARY KEY,
     valor      TEXT NOT NULL,
@@ -302,6 +324,14 @@ db.serialize(() => {
   // Migración: columna modulos en usuarios (JSON array de módulos personalizados)
   db.run(`ALTER TABLE usuarios ADD COLUMN modulos TEXT`, err => {
     if (err && !err.message.includes('duplicate column')) console.error('Migración usuarios (modulos):', err.message);
+  });
+
+  // Migración: origen del registro en diario (orden de trabajo / reporte ciudadano)
+  db.run(`ALTER TABLE diario ADD COLUMN origen_tipo TEXT`, err => {
+    if (err && !err.message.includes('duplicate column')) console.error('Migración diario (origen_tipo):', err.message);
+  });
+  db.run(`ALTER TABLE diario ADD COLUMN origen_folio TEXT`, err => {
+    if (err && !err.message.includes('duplicate column')) console.error('Migración diario (origen_folio):', err.message);
   });
 
   // Migración: renombrar estado "Pendiente audiencia" → "Pendiente respuesta"
@@ -382,6 +412,14 @@ db.serialize(() => {
   // Migración: punto_tolva en diario
   db.run(`ALTER TABLE diario ADD COLUMN punto_tolva TEXT`, err => {
     if (err && !err.message.includes('duplicate column')) console.error('Migración diario (punto_tolva):', err.message);
+  });
+
+  // Migración: responsable y turno en rutas (Anexo 2 — título de concesión)
+  db.run(`ALTER TABLE rutas ADD COLUMN responsable TEXT`, err => {
+    if (err && !err.message.includes('duplicate column')) console.error('Migración rutas (responsable):', err.message);
+  });
+  db.run(`ALTER TABLE rutas ADD COLUMN turno TEXT`, err => {
+    if (err && !err.message.includes('duplicate column')) console.error('Migración rutas (turno):', err.message);
   });
 
   // Tabla Lista Negra

@@ -4,8 +4,9 @@ const db      = require('../db/database');
 const multer  = require('multer');
 const path    = require('path');
 
+const { UPLOADS_DIR } = require('../paths');
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, '..', 'uploads')),
+  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
   filename:    (req, file, cb) => cb(null, `sup_${Date.now()}_${file.originalname.replace(/\s/g,'_')}`)
 });
 const upload = multer({ storage, limits: { fileSize: 15*1024*1024 } });
@@ -77,6 +78,23 @@ router.post('/', upload.fields([{name:'foto1',maxCount:1},{name:'foto2',maxCount
     // Marcar diario como supervisado si viene folioDiario
     if (b.folioDiario) {
       await db.run_p('UPDATE diario SET auditado=1 WHERE folio=?', [b.folioDiario]);
+    }
+    // Auto-crear penalidad si veredicto es Incumplimiento (score < 70%)
+    const veredictoFinal = b.veredicto || '';
+    if (veredictoFinal.toLowerCase() === 'incumplimiento') {
+      try {
+        const folioRow = await db.get_p(`SELECT folio FROM penalidades ORDER BY id DESC LIMIT 1`);
+        const nextNum  = folioRow ? parseInt(folioRow.folio.split('/')[2]) + 1 : 1;
+        const penFolio = `DLM/PEN/${String(nextNum).padStart(4,'0')}`;
+        const hoy      = (b.fecha || new Date().toLocaleDateString('en-CA'));
+        await db.run_p(
+          `INSERT INTO penalidades (folio,fecha,tipo,descripcion,umas,estado,folio_ref)
+           VALUES (?,?,?,?,?,?,?)`,
+          [ penFolio, hoy, 'AUDITORIA',
+            `Incumplimiento detectado en supervisión ${b.folio||''} — Score: ${b.score ?? '?'}%`,
+            20, 'DETECTADO', b.folio||null ]
+        );
+      } catch(_) { /* No interrumpir la respuesta si falla la penalidad */ }
     }
     const created = await db.get_p('SELECT * FROM auditorias WHERE id=?', [result.lastID]);
     res.status(201).json(created);

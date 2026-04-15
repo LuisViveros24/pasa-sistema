@@ -11,9 +11,9 @@ const path    = require('path');
 const fs      = require('fs');
 const https   = require('https');
 
-// ── Asegurar carpeta de uploads ─────────────────────────────────
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
+// ── Rutas de datos (DB + uploads) ───────────────────────────────
+const { UPLOADS_DIR } = require('./paths');
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 // ── App ─────────────────────────────────────────────────────────
 const app = express();
@@ -48,6 +48,7 @@ app.use('/api/usuarios',       requireAuth, require('./routes/usuarios'));
 app.use('/api/conciliaciones', requireAuth, require('./routes/conciliaciones'));
 app.use('/api/config',         requireAuth, require('./routes/config'));
 app.use('/api/lista-negra',   requireAuth, require('./routes/lista_negra'));
+app.use('/api/ordenes',       requireAuth, require('./routes/ordenes'));
 
 // Ruta de salud (útil para verificar que el server corre)
 app.get('/api/health', (req, res) => {
@@ -60,21 +61,8 @@ app.get('*', (req, res) => {
 });
 
 // ── Arranque ────────────────────────────────────────────────────
-const { execSync }  = require('child_process');
-const PORT      = process.env.PORT       || 3000;
+const PORT       = process.env.PORT       || 3000;
 const PORT_HTTPS = process.env.PORT_HTTPS || 3443;
-
-// Liberar puertos si ya están ocupados antes de iniciar
-[PORT, PORT_HTTPS].forEach(p => {
-  try {
-    const pids = execSync(`lsof -ti :${p}`, { stdio: ['pipe','pipe','ignore'] }).toString().trim();
-    if (pids) {
-      pids.split('\n').forEach(pid => { try { process.kill(Number(pid), 'SIGKILL'); } catch(_){} });
-      console.log(`  ⚡  Puerto ${p} liberado automáticamente.`);
-      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 300);
-    }
-  } catch(_) {}
-});
 
 const { networkInterfaces } = require('os');
 const nets = networkInterfaces();

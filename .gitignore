@@ -1,5 +1,10 @@
 node_modules/
 pasa.db
+pasa.db-shm
+pasa.db-wal
 uploads/
 *.log
 .env
+certs/
+*.pem
+.DS_Store

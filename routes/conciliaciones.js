@@ -78,6 +78,19 @@ router.post('/', async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
+// PATCH /api/conciliaciones/:id/cerrar
+router.patch('/:id/cerrar', async (req, res) => {
+  try {
+    const r = await db.run_p(
+      `UPDATE conciliaciones SET estado='cerrada' WHERE id=?`,
+      [req.params.id]
+    );
+    if (r.changes === 0) return res.status(404).json({ error: 'No encontrada' });
+    const updated = await db.get_p('SELECT * FROM conciliaciones WHERE id=?', [req.params.id]);
+    res.json(updated);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
 // DELETE /api/conciliaciones/:id
 router.delete('/:id', async (req, res) => {
   try {

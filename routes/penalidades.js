@@ -66,6 +66,94 @@ router.post('/', async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
+// ── Helper: sumar N días hábiles (excluye sáb y dom) ─────────
+function addBusinessDays(dateStr, days) {
+  const d = new Date(dateStr + 'T12:00:00');
+  let added = 0;
+  while (added < days) {
+    d.setDate(d.getDate() + 1);
+    const dow = d.getDay();
+    if (dow !== 0 && dow !== 6) added++;
+  }
+  return d.toISOString().split('T')[0];
+}
+
+// ── GET /api/penalidades/vencidas ─────────────────────────────
+router.get('/vencidas', async (req, res) => {
+  try {
+    const hoy = new Date().toLocaleDateString('en-CA');
+    const rows = await db.all_p(
+      `SELECT * FROM penalidades
+       WHERE estado IN ('notificada','NOTIFICADO','en_plazo_defensa','EN_PLAZO_DEFENSA')
+         AND plazo_respuesta IS NOT NULL AND plazo_respuesta < ?
+       ORDER BY plazo_respuesta ASC`,
+      [hoy]
+    );
+    res.json({ data: rows, total: rows.length });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── PATCH /api/penalidades/:id/notificar ──────────────────────
+router.patch('/:id/notificar', async (req, res) => {
+  try {
+    const { fecha_notificacion } = req.body;
+    const fechaNoti = fecha_notificacion || new Date().toLocaleDateString('en-CA');
+    const plazo     = addBusinessDays(fechaNoti, 10);
+    const r = await db.run_p(
+      `UPDATE penalidades SET estado='NOTIFICADO', fecha_notificacion=?, plazo_respuesta=? WHERE id=?`,
+      [fechaNoti, plazo, req.params.id]
+    );
+    if (r.changes === 0) return res.status(404).json({ error: 'No encontrada' });
+    const updated = await db.get_p('SELECT * FROM penalidades WHERE id=?', [req.params.id]);
+    res.json(updated);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── PATCH /api/penalidades/:id/impugnar ───────────────────────
+router.patch('/:id/impugnar', async (req, res) => {
+  try {
+    const { respuesta } = req.body;
+    const hoy = new Date().toLocaleDateString('en-CA');
+    const r = await db.run_p(
+      `UPDATE penalidades SET estado='IMPUGNADO', respuesta=?, fecha_respuesta=? WHERE id=?`,
+      [respuesta || null, hoy, req.params.id]
+    );
+    if (r.changes === 0) return res.status(404).json({ error: 'No encontrada' });
+    const updated = await db.get_p('SELECT * FROM penalidades WHERE id=?', [req.params.id]);
+    res.json(updated);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── PATCH /api/penalidades/:id/determinar ────────────────────
+router.patch('/:id/determinar', async (req, res) => {
+  try {
+    const { determinacion } = req.body;
+    const hoy = new Date().toLocaleDateString('en-CA');
+    const r = await db.run_p(
+      `UPDATE penalidades SET estado='FIRME', determinacion=?, fecha_determinacion=? WHERE id=?`,
+      [determinacion || null, hoy, req.params.id]
+    );
+    if (r.changes === 0) return res.status(404).json({ error: 'No encontrada' });
+    const updated = await db.get_p('SELECT * FROM penalidades WHERE id=?', [req.params.id]);
+    res.json(updated);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── PATCH /api/penalidades/:id/cobrar ────────────────────────
+router.patch('/:id/cobrar', async (req, res) => {
+  try {
+    const { fecha_pago } = req.body;
+    const hoy = new Date().toLocaleDateString('en-CA');
+    const r = await db.run_p(
+      `UPDATE penalidades SET estado='COBRADO', fecha_pago=? WHERE id=?`,
+      [fecha_pago || hoy, req.params.id]
+    );
+    if (r.changes === 0) return res.status(404).json({ error: 'No encontrada' });
+    const updated = await db.get_p('SELECT * FROM penalidades WHERE id=?', [req.params.id]);
+    res.json(updated);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
 // ── Actualizar penalidad ──────────────────────────────────────
 router.put('/:id', async (req, res) => {
   try {

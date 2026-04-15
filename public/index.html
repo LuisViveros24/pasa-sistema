@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DGSPM — Sistema Integral PASA · Torreón</title>
+<title>DGSPM — Sistema Integral CEA · Torreón</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -16,14 +16,14 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{
-  --bg:#0d1117; --surface:#161b22; --surface2:#21262d; --surface3:#2d333b;
-  --border:#30363d; --border2:#3d444d;
-  --accent:#e6a817; --accent2:#f25c2a; --accent-dim:rgba(230,168,23,.12);
-  --green:#3fb950; --green-dim:rgba(63,185,80,.12);
-  --red:#f85149; --red-dim:rgba(248,81,73,.12);
-  --blue:#58a6ff; --blue-dim:rgba(88,166,255,.12);
-  --purple:#bc8cff; --purple-dim:rgba(188,140,255,.12);
-  --text:#e6edf3; --muted:#8b949e; --muted2:#6e7681;
+  --bg:#ffffff; --surface:#ffe8cd; --surface2:#ffd19b; --surface3:#ffba6a;
+  --border:#ffa333; --border2:#f69100;
+  --accent:#d27300; --accent2:#af5700; --accent-dim:rgba(210,115,0,.12);
+  --green:#1a7a3a; --green-dim:rgba(26,122,58,.12);
+  --red:#cc3311; --red-dim:rgba(204,51,17,.12);
+  --blue:#1d65b4; --blue-dim:rgba(29,101,180,.12);
+  --purple:#7c3aed; --purple-dim:rgba(124,58,237,.12);
+  --text:#1a0a00; --muted:#7a3d00; --muted2:#a85500;
   --font-head:'Syne',sans-serif; --font-body:'DM Sans',sans-serif; --font-mono:'DM Mono',monospace;
   --sidebar-w:230px; --topbar-h:52px;
   --radius:8px; --radius-lg:12px;
@@ -257,13 +257,14 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 .empty p{font-size:12.5px;}
 
 /* ── LOADER ── */
-#loader-overlay{position:fixed;inset:0;background:rgba(13,17,23,.95);z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;}
+#loader-overlay{position:fixed;inset:0;background:rgba(255,255,255,.95);z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;}
 .lo-spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .lo-text{font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:14px;text-align:center;letter-spacing:1px;text-transform:uppercase;line-height:2;}
 
 /* ── SUCCESS FLASH ── */
 #success-flash{position:fixed;bottom:22px;right:22px;background:var(--green);color:#000;font-family:var(--font-head);font-size:12px;font-weight:700;padding:12px 18px;border-radius:var(--radius-lg);display:none;align-items:center;gap:8px;z-index:9000;box-shadow:0 4px 20px rgba(63,185,80,.35);animation:slideUp .3s ease;}
+#success-flash.flash-error{background:#e5534b;color:#fff;box-shadow:0 4px 20px rgba(229,83,75,.35);}
 @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 
 /* ── PDF TEMPLATES ── */
@@ -379,7 +380,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   <div class="login-box">
     <div class="login-logo">
       <div class="logo">DSP</div>
-      <span>Sistema Integral PASA</span>
+      <span>Sistema Integral CEA</span>
     </div>
     <h3>Iniciar sesión</h3>
     <p>R. Ayuntamiento de Torreón · Dirección de Limpieza</p>
@@ -400,7 +401,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 <div class="topbar">
   <div class="tb-left">
     <div class="logo">DSP</div>
-    <div class="tb-title">Sistema Integral PASA
+    <div class="tb-title">Sistema Integral CEA
       <span>R. Ayuntamiento de Torreón · Dirección de Limpieza</span>
     </div>
   </div>
@@ -424,7 +425,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   <div class="sb-section" data-roles="administrador">Principal</div>
   <div class="nav-item active" data-roles="administrador" onclick="nav('dashboard',this)"><span class="ni">📊</span> Dashboard</div>
 
-  <div class="sb-section">Operación PASA</div>
+  <div class="sb-section">Operación CEA</div>
   <div class="nav-item" data-roles="administrador pesaje" onclick="nav('bascula',this)"><span class="ni">⚖️</span> Báscula / Boleta</div>
   <div class="nav-item" data-roles="administrador supervisor" onclick="nav('diario',this)"><span class="ni">📋</span> Diario de Actividades<span class="nav-badge" id="nb-diario">0</span></div>
   <div class="nav-item" data-roles="administrador auditor" onclick="nav('auditoria',this)"><span class="ni">🔍</span> Supervisión<span class="nav-badge ok" id="nb-audit">0</span></div>
@@ -437,6 +438,9 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   <div class="nav-item" data-roles="administrador" onclick="nav('clausulas',this)"><span class="ni">🏛️</span> Cláusulas Vigentes</div>
   <div class="nav-item" data-roles="administrador" onclick="nav('organismo',this)"><span class="ni">🗓</span> Reunión Org. Supervisor<span class="nav-badge warn" id="nb-org">0</span></div>
   <div class="nav-item" data-roles="administrador" onclick="nav('multas',this)"><span class="ni">💰</span> Multas Aplicadas</div>
+
+  <div class="sb-section" data-roles="administrador supervisor">Gestión</div>
+  <div class="nav-item" data-roles="administrador supervisor" onclick="nav('ordenes',this)"><span class="ni">📋</span> Órdenes de Trabajo<span class="nav-badge warn" id="nb-ordenes"></span></div>
 
   <div class="sb-section" data-roles="administrador enlace">Ciudadanía</div>
   <div class="nav-item" data-roles="administrador enlace" onclick="nav('reportes',this)"><span class="ni">📣</span> Reportes Ciudadanos<span class="nav-badge warn" id="nb-reportes"></span></div>
@@ -457,7 +461,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   <div class="sec-h"><h2>Dashboard de Supervisión</h2><p>Concesión: Prórroga del Contrato de Limpieza · 31 de marzo 2011 · Vigente hasta marzo 2026</p></div>
   <div class="stats-grid">
     <div class="stat-card sc-yellow"><div class="stat-label">Boletas Báscula</div><div class="stat-val" id="s-boletas">0</div><div class="stat-sub">Registradas</div></div>
-    <div class="stat-card sc-green"><div class="stat-label">Diario Actividades</div><div class="stat-val" id="s-diario">0</div><div class="stat-sub">Registros PASA</div></div>
+    <div class="stat-card sc-green"><div class="stat-label">Diario Actividades</div><div class="stat-val" id="s-diario">0</div><div class="stat-sub">Registros CEA</div></div>
     <div class="stat-card sc-blue"><div class="stat-label">Supervisión</div><div class="stat-val" id="s-audit">0</div><div class="stat-sub">Evaluaciones</div></div>
     <div class="stat-card sc-red"><div class="stat-label">Penalidades</div><div class="stat-val" id="s-penalidades">0</div><div class="stat-sub">Registradas</div></div>
     <div class="stat-card sc-purple"><div class="stat-label">Prom. Supervisión</div><div class="stat-val" id="s-prom-aud">—</div><div class="stat-sub">Calificación media</div></div>
@@ -506,6 +510,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
     <div class="table-header">
       <span class="table-title"><i class="fas fa-chart-line" style="color:var(--accent);margin-right:6px;"></i> Tendencias — Últimos 6 meses</span>
       <button class="btn btn-outline btn-sm" onclick="abrirReporteEjecutivo()"><i class="fas fa-file-alt"></i> Reporte Mensual</button>
+      <button class="btn btn-accent btn-sm" onclick="abrirComprobacion()"><i class="fas fa-print"></i> Imprimir Comprobación</button>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:16px;">
       <div>
@@ -599,7 +604,8 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
           <select id="b-tipo" onchange="onTipoServicio()" required>
             <option value="">— Selecciona —</option>
             <option value="Carga Trasera">Carga Trasera</option>
-            <option value="Tolvas y Contenedores">Tolvas y Contenedores</option>
+            <option value="Contenedores">Contenedores</option>
+            <option value="Tolvas">Tolvas</option>
           </select>
         </div>
         <div class="form-group" id="box-abastos" style="display:none;">
@@ -611,7 +617,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
         </div>
         <div class="form-group">
           <label>Procedencia *</label>
-          <input type="text" id="b-procedencia" placeholder="Colonia, zona, ruta de origen..." required>
+          <input type="text" id="b-procedencia" placeholder="Colonia, zona, ruta de origen..." required list="lista-colonias">
         </div>
         <div class="form-group">
           <label>Ruta</label>
@@ -703,7 +709,8 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
         <select id="boletas-tipo" onchange="renderBoletasRecientes()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:11px;color:var(--text);width:auto;">
           <option value="">Todos los tipos</option>
           <option value="Carga Trasera">Carga Trasera</option>
-          <option value="Tolvas y Contenedores">Tolvas</option>
+          <option value="Contenedores">Contenedores</option>
+          <option value="Tolvas">Tolvas</option>
         </select>
         <input type="date" id="boletas-ini" title="Desde" onchange="renderBoletasRecientes()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:11px;color:var(--text);width:auto;">
         <input type="date" id="boletas-fin" title="Hasta" onchange="renderBoletasRecientes()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:11px;color:var(--text);width:auto;">
@@ -780,11 +787,11 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 
 <!-- ═══ DIARIO DE ACTIVIDADES ═══ -->
 <div class="tab-panel" id="tab-diario">
-  <div class="sec-h"><h2>Diario de Actividades</h2><p>El responsable PASA captura las actividades de cada servicio realizado</p></div>
+  <div class="sec-h"><h2>Diario de Actividades</h2><p>El responsable CEA captura las actividades de cada servicio realizado</p></div>
   <div class="folio-bar">
     <div class="folio-num" id="diario-folio-display">DLM/GEN/0001</div>
     <div class="folio-meta"><strong>Registro Operativo de Campo</strong><p>Cada registro queda disponible para su evaluación en Auditorías</p></div>
-    <span class="badge b-green">Responsable PASA</span>
+    <span class="badge b-green">Responsable CEA</span>
   </div>
   <form id="form-diario" onsubmit="guardarDiario(event)">
     <div class="section-box">
@@ -792,7 +799,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
       <div class="form-grid">
         <div class="form-group"><label>Fecha *</label><input type="date" id="d-fecha" required></div>
         <div class="form-group"><label>Hora *</label><input type="time" id="d-hora" required></div>
-        <div class="form-group fg-span2"><label>Responsable / Jefe de Cuadrilla PASA *</label>
+        <div class="form-group fg-span2"><label>Responsable / Jefe de Cuadrilla CEA *</label>
           <select id="d-responsable" required>
             <option value="">-- Seleccionar responsable --</option>
             <option>Edgar Flores</option>
@@ -811,7 +818,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
       <div class="form-group" style="margin-bottom:12px;"><label>Tipo de Servicio *</label>
         <select id="d-servicio" onchange="cargarActDiario()" required>
           <option value="" disabled selected>Seleccione...</option>
-          <option>Tolvas y Contenedores</option><option>Barrido Manual</option>
+          <option>Contenedores</option><option>Tolvas</option><option>Barrido Manual</option>
           <option>Barrido Selectivo</option><option>Barrido Mecánico</option><option>Carga Trasera</option>
         </select>
       </div>
@@ -867,6 +874,25 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
       </div>
     </div>
     <div class="section-box">
+      <div class="section-box-title"><i class="fas fa-link"></i> ¿Este registro cumple una orden? <span style="font-size:11px;font-weight:400;color:var(--muted);">(opcional)</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Tipo de origen</label>
+          <select id="d-origen-tipo" onchange="toggleOrigenFolio()">
+            <option value="">— Sin origen ligado —</option>
+            <option value="orden">📋 Orden de Trabajo — se cerrará automáticamente</option>
+            <option value="reporte">📣 Reporte Ciudadano</option>
+          </select>
+        </div>
+        <div class="form-group" id="d-origen-folio-box" style="margin-bottom:0;display:none;">
+          <label id="d-origen-folio-label">Folio de origen</label>
+          <input type="text" id="d-origen-folio" placeholder="Ej. OT-20260410-001"
+            style="font-family:var(--font-mono);font-size:13px;" list="d-origen-folio-list">
+          <datalist id="d-origen-folio-list"></datalist>
+        </div>
+      </div>
+    </div>
+    <div class="section-box">
       <div class="section-box-title"><i class="fas fa-comment-alt"></i> Observaciones</div>
       <textarea id="d-obs" placeholder="Notas del responsable..." rows="3"></textarea>
     </div>
@@ -902,7 +928,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 
   <div class="folio-bar">
     <div class="folio-num" id="aud-folio-display">SUP/0001</div>
-    <div class="folio-meta"><strong>Evaluación de Desempeño PASA</strong><p id="aud-folio-desc">Supervisión vinculada al Diario de Actividades</p></div>
+    <div class="folio-meta"><strong>Evaluación de Desempeño CEA</strong><p id="aud-folio-desc">Supervisión vinculada al Diario de Actividades</p></div>
     <span class="badge b-purple" id="aud-origen-badge">Diario</span>
   </div>
   <form id="form-auditoria" onsubmit="guardarAuditoria(event)">
@@ -936,14 +962,14 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
           <select id="a-turno"><option>Matutino</option><option>Vespertino</option><option>Nocturno</option></select>
         </div>
         <div class="form-group"><label>Tipo Servicio Supervisado</label>
-          <select id="a-tipo-serv" onchange="toggleAudNumEco()"><option value="">— Selecciona —</option><option>Barrido Manual</option><option>Barrido Mecánico</option><option>Carga Trasera</option><option>Tolvas y Contenedores</option><option>Barrido Selectivo</option></select>
+          <select id="a-tipo-serv" onchange="toggleAudNumEco()"><option value="">— Selecciona —</option><option>Barrido Manual</option><option>Barrido Mecánico</option><option>Carga Trasera</option><option>Contenedores</option><option>Tolvas</option><option>Barrido Selectivo</option></select>
         </div>
         <div class="form-group" id="aud-box-num-eco" style="display:none;">
           <label>Número Económico de la Unidad *</label>
           <input type="text" id="a-num-eco" placeholder="Ej. CT-2898" style="text-transform:uppercase;" list="lista-unidades" autocomplete="off">
         </div>
         <div class="form-group fg-span2"><label>Supervisor Responsable *</label><input type="text" id="a-auditor" placeholder="Nombre del supervisor" required></div>
-        <div class="form-group"><label>Representante PASA (si aplica)</label><input type="text" id="a-rep-pasa" placeholder="Nombre"></div>
+        <div class="form-group"><label>Representante CEA (si aplica)</label><input type="text" id="a-rep-pasa" placeholder="Nombre"></div>
         <div class="form-group"><label>Zona / Sector Supervisado</label><input type="text" id="a-zona" placeholder="Zona, ruta o sector"></div>
       </div>
     </div>
@@ -971,7 +997,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
         <textarea id="a-hallazgos" rows="4" placeholder="Describe los hallazgos más importantes..."></textarea>
       </div>
       <div class="form-group" style="margin-bottom:12px;"><label>Acciones Correctivas Requeridas</label>
-        <textarea id="a-acciones" rows="3" placeholder="Lista de acciones que PASA debe implementar..."></textarea>
+        <textarea id="a-acciones" rows="3" placeholder="Lista de acciones que CEA debe implementar..."></textarea>
       </div>
       <div class="form-grid">
         <div class="form-group"><label>Plazo para Corrección</label><input type="date" id="a-plazo"></div>
@@ -1007,7 +1033,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
       <div class="section-box-title"><i class="fas fa-tasks"></i> Seguimiento y Compromiso de Mejora</div>
       <div class="form-group" style="margin-bottom:12px;">
         <label>Compromiso de mejora <span id="lbl-compromiso-req" style="color:var(--red);display:none;">*</span></label>
-        <textarea id="aud-compromiso" rows="2" placeholder="Describe el compromiso concreto de mejora acordado con PASA..."></textarea>
+        <textarea id="aud-compromiso" rows="2" placeholder="Describe el compromiso concreto de mejora acordado con CEA..."></textarea>
       </div>
       <div class="form-grid">
         <div class="form-group">
@@ -1172,7 +1198,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 <div class="tab-panel" id="tab-rutas">
   <div class="sec-h">
     <h2>Rutas de Recolección</h2>
-    <p>Catálogo de cobertura: colonias, unidades y horarios por ruta — Servicio PASA 2025</p>
+    <p>Catálogo de cobertura: colonias, unidades y horarios por ruta — Servicio CEA 2025</p>
   </div>
 
   <!-- Stats dinámicas -->
@@ -1181,20 +1207,38 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   <!-- Tabla con toolbar de filtros -->
   <div class="table-wrap">
     <div class="table-header" style="flex-wrap:wrap;gap:8px;">
-      <span class="table-title">Catálogo de Cobertura</span>
+      <span class="table-title"><i class="fas fa-route" style="color:var(--accent);margin-right:6px;"></i> Catálogo de Cobertura</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-left:auto;">
         <input type="text" id="rutas-q" placeholder="Buscar colonia, ruta, unidad…"
-          style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius-md);padding:6px 10px;font-size:12px;color:var(--text);width:190px;"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:12px;color:var(--text);width:190px;"
           oninput="renderRutasTable()">
+        <select id="rutas-responsable" onchange="renderRutasTable()"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:12px;color:var(--text);">
+          <option value="">Todos los responsables</option>
+          <option value="Carlos González">Carlos González</option>
+          <option value="Said Cuevas">Said Cuevas</option>
+          <option value="Heber Portillo">Heber Portillo</option>
+          <option value="Jesus Sena">Jesus Sena</option>
+          <option value="Homero Elizalde">Homero Elizalde</option>
+          <option value="Jorge Sanchez">Jorge Sanchez</option>
+          <option value="Roberto Alvarado">Roberto Alvarado</option>
+        </select>
         <select id="rutas-zona" onchange="renderRutasTable()"
-          style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius-md);padding:6px 10px;font-size:12px;color:var(--text);">
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:12px;color:var(--text);">
           <option value="">Todas las zonas</option>
           <option value="NORTE">Norte</option>
           <option value="SUR">Sur</option>
           <option value="CENTRO">Centro</option>
         </select>
+        <select id="rutas-turno" onchange="renderRutasTable()"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:12px;color:var(--text);">
+          <option value="">Todos los turnos</option>
+          <option value="Matutino">Matutino</option>
+          <option value="Vespertino">Vespertino</option>
+          <option value="Mixto">Mixto</option>
+        </select>
         <select id="rutas-dias" onchange="renderRutasTable()"
-          style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius-md);padding:6px 10px;font-size:12px;color:var(--text);">
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:12px;color:var(--text);">
           <option value="">Todos los días</option>
           <option value="lunes">Lun · Mié · Vie</option>
           <option value="Martes">Mar · Jue · Sáb</option>
@@ -1202,33 +1246,13 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
         <button class="btn btn-outline btn-sm" onclick="verCoberturaHoy()" title="Ver unidades sin boleta hoy">
           <i class="fas fa-map-marked-alt"></i> Cobertura de hoy
         </button>
-        <button class="btn btn-accent btn-sm" onclick="abrirImportarRutas()" title="Importar desde archivo Excel (.xlsx)">
-          <i class="fas fa-file-excel"></i> Importar Excel
+        <button class="btn btn-accent btn-sm" onclick="abrirNuevaRuta()">
+          <i class="fas fa-plus"></i> Nueva
         </button>
-        <input type="file" id="rutas-file-input" accept=".xlsx,.xls" style="display:none" onchange="procesarArchivoRutas(this)">
       </div>
     </div>
     <div id="rutas-table-wrap">
       <div style="padding:30px;text-align:center;color:var(--muted);">Cargando catálogo…</div>
-    </div>
-  </div>
-
-  <!-- Modal de confirmación de importación -->
-  <div id="rutas-import-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;max-width:720px;width:95%;max-height:82vh;overflow-y:auto;box-shadow:0 8px 40px #0008;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-        <div style="font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--text);">
-          <i class="fas fa-file-excel" style="color:#1d6f42;margin-right:8px;"></i> Importar Rutas desde Excel
-        </div>
-        <button onclick="cerrarImportRutasModal()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;">✕</button>
-      </div>
-      <div id="rutas-import-preview" style="margin-bottom:18px;"></div>
-      <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button class="btn btn-outline" onclick="cerrarImportRutasModal()">Cancelar</button>
-        <button class="btn btn-accent" id="btn-confirmar-import-rutas" onclick="confirmarImportRutas()">
-          <i class="fas fa-database"></i> Guardar en base de datos
-        </button>
-      </div>
     </div>
   </div>
 
@@ -1240,6 +1264,80 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
         <button onclick="document.getElementById('rutas-cobertura-panel').style.display='none'" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;">✕</button>
       </div>
       <div id="rutas-cobertura-body" style="padding:16px;font-size:13px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar / Nueva Ruta -->
+<div class="modal-overlay" id="modal-ruta">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3 id="modal-ruta-titulo">Editar Ruta</h3>
+      <button class="m-close" onclick="cerrarModal('modal-ruta')">✕</button>
+    </div>
+    <div class="form-grid fg3">
+      <div class="form-group">
+        <label>N° Ruta</label>
+        <input type="number" id="rt-ruta" min="1" placeholder="Ej. 1">
+      </div>
+      <div class="form-group">
+        <label>N° Unidad</label>
+        <input type="text" id="rt-unidad" placeholder="Ej. 2925">
+      </div>
+      <div class="form-group">
+        <label>Responsable</label>
+        <select id="rt-responsable">
+          <option value="">— Sin asignar —</option>
+          <option>Carlos González</option>
+          <option>Said Cuevas</option>
+          <option>Heber Portillo</option>
+          <option>Jesus Sena</option>
+          <option>Homero Elizalde</option>
+          <option>Jorge Sanchez</option>
+          <option>Roberto Alvarado</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Colonia</label>
+        <input type="text" id="rt-colonia" placeholder="Nombre de la colonia" list="lista-colonias">
+      </div>
+      <div class="form-group">
+        <label>Días de recolección</label>
+        <select id="rt-dias">
+          <option value="">— Seleccionar —</option>
+          <option value="lunes, miercoles y viernes">Lun · Mié · Vie</option>
+          <option value="Martes, Jueves y Sábado">Mar · Jue · Sáb</option>
+          <option value="lunes, Martes, Miercoles, Jueves, Viernes, Sabado">Lun a Sáb</option>
+          <option value="Diario">Diario</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Turno</label>
+        <select id="rt-turno">
+          <option value="">— Seleccionar —</option>
+          <option>Matutino</option>
+          <option>Vespertino</option>
+          <option>Mixto</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Zona</label>
+        <select id="rt-zona">
+          <option value="">— Seleccionar —</option>
+          <option value="NORTE">Norte</option>
+          <option value="SUR">Sur</option>
+          <option value="CENTRO">Centro</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Horario</label>
+        <input type="text" id="rt-horarios" placeholder="Ej. 7:00 A.M. - 3:00 P.M.">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" id="btn-del-ruta" style="display:none;margin-right:auto;" onclick="eliminarRuta()"><i class="fas fa-trash"></i> Eliminar</button>
+      <button class="btn btn-outline" onclick="cerrarModal('modal-ruta')">Cancelar</button>
+      <button class="btn btn-accent" onclick="guardarRuta()"><i class="fas fa-save"></i> Guardar</button>
     </div>
   </div>
 </div>
@@ -1667,6 +1765,64 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   </div>
 </div>
 
+<!-- ═══ ÓRDENES DE TRABAJO ═══ -->
+<div class="tab-panel" id="tab-ordenes">
+  <div class="sec-h">
+    <h2>Órdenes de Trabajo</h2>
+    <p>Emite y gestiona instrucciones a supervisores CEA — ligables a Diario de Actividades y Supervisión</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-bar" style="margin-bottom:14px;">
+    <input type="text" class="filter-input" id="ot-q" placeholder="Buscar folio, descripción, supervisor…" oninput="renderOrdenes()">
+    <select class="filter-select" id="ot-estado" onchange="renderOrdenes()">
+      <option value="">Todos los estados</option>
+      <option value="PENDIENTE">PENDIENTE</option>
+      <option value="EN_PROCESO">EN PROCESO</option>
+      <option value="ATENDIDA">ATENDIDA</option>
+      <option value="CANCELADA">CANCELADA</option>
+    </select>
+    <select class="filter-select" id="ot-prioridad" onchange="renderOrdenes()">
+      <option value="">Todas las prioridades</option>
+      <option value="URGENTE">URGENTE</option>
+      <option value="ALTA">ALTA</option>
+      <option value="NORMAL">NORMAL</option>
+      <option value="BAJA">BAJA</option>
+    </select>
+    <select class="filter-select" id="ot-tipo" onchange="renderOrdenes()">
+      <option value="">Todos los tipos</option>
+      <option value="RECOLECCIÓN">RECOLECCIÓN</option>
+      <option value="BARRIDO">BARRIDO</option>
+      <option value="TOLVA">TOLVA</option>
+      <option value="SUPERVISIÓN">SUPERVISIÓN</option>
+      <option value="CORRECTIVA">CORRECTIVA</option>
+      <option value="OTRA">OTRA</option>
+    </select>
+    <button class="btn btn-accent btn-sm" onclick="abrirNuevaOrden()"><i class="fas fa-plus"></i> Nueva Orden</button>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table" id="ot-table">
+      <thead><tr>
+        <th>Folio</th>
+        <th>Fecha</th>
+        <th>Dirigida a</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+        <th>Prioridad</th>
+        <th>Estado</th>
+        <th>Límite</th>
+        <th>Ligado a</th>
+        <th style="text-align:center;">Acciones</th>
+      </tr></thead>
+      <tbody id="ot-tbody">
+        <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:28px;">Cargando…</td></tr>
+      </tbody>
+    </table>
+    <div id="ot-pagination" style="text-align:center;padding:10px;font-size:13px;color:var(--muted);"></div>
+  </div>
+</div>
+
 <!-- ═══ REPORTES CIUDADANOS ═══ -->
 <div class="tab-panel" id="tab-reportes">
   <div class="sec-h"><h2>Reportes Ciudadanos</h2><p>Gestión de quejas y solicitudes de servicio recibidas vía línea de atención</p></div>
@@ -1827,7 +1983,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
     <div class="modal-hdr"><h3>Respuesta de la Concesionaria</h3><button class="m-close" onclick="cerrarModal('modal-respuesta')">✕</button></div>
     <div style="padding:18px;display:grid;gap:14px;">
       <div class="form-group"><label>Fecha de la respuesta</label><input type="date" id="resp-fecha"></div>
-      <div class="form-group" style="grid-column:1/-1"><label>Justificación presentada por PASA</label><textarea id="resp-texto" rows="6" placeholder="Describe la justificación de la empresa sobre la falta de servicio..." style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--radius);padding:9px 12px;font-size:13px;resize:vertical;outline:none;box-sizing:border-box;"></textarea></div>
+      <div class="form-group" style="grid-column:1/-1"><label>Justificación presentada por CEA</label><textarea id="resp-texto" rows="6" placeholder="Describe la justificación de la empresa sobre la falta de servicio..." style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--radius);padding:9px 12px;font-size:13px;resize:vertical;outline:none;box-sizing:border-box;"></textarea></div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-accent" onclick="guardarRespuesta()"><i class="fas fa-save"></i> Guardar</button>
@@ -1909,8 +2065,13 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
           <label>Responsable *</label>
           <select id="rtv-responsable">
             <option>Carlos González</option>
-            <option>Manuel García</option>
+            <option>Said Cuevas</option>
+            <option>Heber Portillo</option>
+            <option>Jesus Sena</option>
             <option>Homero Elizalde</option>
+            <option>Jorge Sanchez</option>
+            <option>Roberto Alvarado</option>
+            <option>Manuel García</option>
             <option>Miguel Vidaña</option>
           </select>
         </div>
@@ -1938,7 +2099,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
         </div>
       </div>
       <button class="btn btn-accent" style="width:100%;" onclick="guardarRegistroTolva()">
-        <i class="fas fa-paper-plane"></i> Guardar y subir a Drive
+        <i class="fas fa-save"></i> Guardar y descargar PDF
       </button>
     </div>
   </div>
@@ -2085,17 +2246,17 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 <div id="loader-overlay"><div class="lo-spinner"></div><div class="lo-text" id="lo-text">Procesando<br>Por favor espera...</div></div>
 
 <!-- Success Flash -->
-<div id="success-flash"><i class="fas fa-check"></i><span id="flash-msg">Guardado</span></div>
+<div id="success-flash"><i id="flash-icon" class="fas fa-check"></i><span id="flash-msg">Guardado</span></div>
 
 <!-- PDF Supervisión (oculto) -->
 <div id="pdf-sup-container">
   <div id="hojaPDF">
-    <div class="ph"><div><h1>DGSPM TORREÓN</h1><h2>Diario de Actividades — Concesionaria PASA</h2></div><div><div class="ph-fol-label">FOLIO</div><div class="ph-fol-val" id="pdf-folio">---</div></div></div>
+    <div class="ph"><div><h1>DGSPM TORREÓN</h1><h2>Diario de Actividades — CEA</h2></div><div><div class="ph-fol-label">FOLIO</div><div class="ph-fol-val" id="pdf-folio">---</div></div></div>
     <div class="pb">
       <div class="pmeta">
         <div class="pmi"><div class="pmi-l">Fecha</div><div class="pmi-v" id="pdf-fecha"></div></div>
         <div class="pmi"><div class="pmi-l">Hora</div><div class="pmi-v" id="pdf-hora"></div></div>
-        <div class="pmi pspan2"><div class="pmi-l">Responsable PASA</div><div class="pmi-v" id="pdf-resp"></div></div>
+        <div class="pmi pspan2"><div class="pmi-l">Responsable CEA</div><div class="pmi-v" id="pdf-resp"></div></div>
         <div class="pmi pspan2"><div class="pmi-l">Tipo de Servicio</div><div class="pmi-v" id="pdf-serv"></div></div>
         <div class="pmi"><div class="pmi-l">No. Unidad</div><div class="pmi-v" id="pdf-unidad"></div></div>
         <div class="pmi"><div class="pmi-l">GPS</div><div class="pmi-v" id="pdf-gps" style="font-size:9px;font-family:monospace;"></div></div>
@@ -2111,20 +2272,20 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
           <div class="pfoto-card"><div class="pfoto-bar pbar-d">DESPUÉS</div><div class="pfoto-img"><img id="pdf-img2"></div></div>
         </div>
       </div>
-      <div class="pfooter"><span>DGSPM TORREÓN · DIARIO DE ACTIVIDADES PASA</span><span id="pdf-ts"></span></div>
+      <div class="pfooter"><span>DGSPM TORREÓN · DIARIO DE ACTIVIDADES CEA</span><span id="pdf-ts"></span></div>
     </div>
   </div>
 </div>
 
 <!-- PDF Auditoría (oculto) -->
 <div id="auditoriaPDF" style="position:fixed;left:-9999px;top:0;width:816px;background:white;font-family:Helvetica,sans-serif;padding:38px;">
-  <div class="ap-hdr"><div><h1>DGSPM TORREÓN</h1><h2>Informe de Supervisión — Concesionaria PASA</h2></div><div class="ap-fol"><div class="ap-fol-lbl">Folio Supervisión</div><div class="ap-fol-val" id="apdf-folio"></div></div></div>
+  <div class="ap-hdr"><div><h1>DGSPM TORREÓN</h1><h2>Informe de Supervisión — CEA</h2></div><div class="ap-fol"><div class="ap-fol-lbl">Folio Supervisión</div><div class="ap-fol-val" id="apdf-folio"></div></div></div>
   <div class="ap-meta">
     <div class="ap-mi"><div class="ap-mi-l">Fecha</div><div class="ap-mi-v" id="apdf-fecha"></div></div>
     <div class="ap-mi"><div class="ap-mi-l">Hora</div><div class="ap-mi-v" id="apdf-hora"></div></div>
     <div class="ap-mi"><div class="ap-mi-l">Turno</div><div class="ap-mi-v" id="apdf-turno"></div></div>
     <div class="ap-mi"><div class="ap-mi-l">Auditor</div><div class="ap-mi-v" id="apdf-auditor"></div></div>
-    <div class="ap-mi"><div class="ap-mi-l">Rep. PASA</div><div class="ap-mi-v" id="apdf-rep"></div></div>
+    <div class="ap-mi"><div class="ap-mi-l">Rep. CEA</div><div class="ap-mi-v" id="apdf-rep"></div></div>
     <div class="ap-mi"><div class="ap-mi-l">Zona / Folio Diario</div><div class="ap-mi-v" id="apdf-zona"></div></div>
   </div>
   <div class="ap-score-box">
@@ -2136,7 +2297,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   <div class="ap-sec">Resultados por Rubro</div><div id="apdf-rubros"></div>
   <div class="ap-sec">Hallazgos y No Conformidades</div><div id="apdf-hallazgos"></div>
   <div class="ap-sec">Plan de Acción</div><div id="apdf-acciones" style="font-size:11px;color:#334155;line-height:1.6;"></div>
-  <div class="ap-footer"><span>Firma Auditor: _______________________ &nbsp;&nbsp; Firma Rep. PASA: _______________________</span><span id="apdf-ts"></span></div>
+  <div class="ap-footer"><span>Firma Auditor: _______________________ &nbsp;&nbsp; Firma Rep. CEA: _______________________</span><span id="apdf-ts"></span></div>
 </div>
 <!-- PDF Reporte Ciudadano (oculto) -->
 <div id="pdf-rca-container">
@@ -2199,7 +2360,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 
 <script>
 // ════════════════════════════════════════════════════════
-//  DGSPM — SISTEMA INTEGRAL PASA · TORREÓN
+//  DGSPM — SISTEMA INTEGRAL CEA · TORREÓN
 //  Frontend — consume API REST local en lugar de localStorage
 // ════════════════════════════════════════════════════════
 
@@ -2213,16 +2374,20 @@ const GDRIVE_FOLDER_MAP = {
   'Carga Trasera':          '18kXSbc94qc4vo2vkhlZ-jk15aViMJMT2',
   'Barrido Mecánico':       '1TKBuewMPS6EAzs8pLDT-n0-021CYGhN-',
   'Barrido Mecanico':       '1TKBuewMPS6EAzs8pLDT-n0-021CYGhN-',
-  'Tolvas y Contenedores':  '1gO_URQAGTJuajJtV_c8BlzCgJ_8K2G-b',
+  'Contenedores':           '1gO_URQAGTJuajJtV_c8BlzCgJ_8K2G-b',
+  'Tolvas':                 '1gO_URQAGTJuajJtV_c8BlzCgJ_8K2G-b',
 };
 let _gToken = null;      // { access_token, expires_at }
 let _gTokenClient = null;
+
+const GDRIVE_ACCOUNT = 'dulcenormal24@gmail.com';
 
 function _initGTokenClient() {
   if (_gTokenClient || !window.google?.accounts?.oauth2) return;
   _gTokenClient = google.accounts.oauth2.initTokenClient({
     client_id: GDRIVE_CLIENT_ID,
     scope: 'https://www.googleapis.com/auth/drive.file',
+    login_hint: GDRIVE_ACCOUNT,
     callback: () => {},
   });
 }
@@ -2237,7 +2402,7 @@ function getGDriveToken() {
       _gToken = { access_token: resp.access_token, expires_at: Date.now() + (resp.expires_in - 60) * 1000 };
       resolve(resp.access_token);
     };
-    _gTokenClient.requestAccessToken({ prompt: _gToken ? '' : '' });
+    _gTokenClient.requestAccessToken({ login_hint: GDRIVE_ACCOUNT, prompt: '' });
   });
 }
 
@@ -2260,7 +2425,7 @@ async function subirPDFaDrive(blob, filename, folderId) {
 }
 
 // ── AUTH ──────────────────────────────────────────────────────
-let authToken = localStorage.getItem('pasa_token') || null;
+let authToken = localStorage.getItem('cea_token') || null;
 
 let currentRol     = null;
 let currentModulos = null; // null = usar ROL_ACCESO; array = módulos personalizados
@@ -2316,14 +2481,14 @@ function setSession(token, nombre, rol, modulos) {
   currentRol     = rol;
   currentModulos = (rol === 'administrador') ? null : (modulos ? (typeof modulos === 'string' ? JSON.parse(modulos) : modulos) : null);
   if (token) {
-    localStorage.setItem('pasa_token', token);
+    localStorage.setItem('cea_token', token);
     document.getElementById('tb-nombre').textContent = nombre;
     document.getElementById('tb-rol').textContent    = rol;
     document.getElementById('tb-user').style.display = 'flex';
     document.getElementById('login-overlay').classList.add('hidden');
     applyRoles(rol, currentModulos);
   } else {
-    localStorage.removeItem('pasa_token');
+    localStorage.removeItem('cea_token');
     currentRol     = null;
     currentModulos = null;
     document.getElementById('tb-user').style.display = 'none';
@@ -2373,7 +2538,8 @@ async function checkAuth() {
 const COLONIAS = ["20 de Noviembre","2DA de Cobian Centro","3RO. De Cobian","4°TO de Cobian","Aeropuerto","Alamedas","Alebrijes","Alvia","Ampliación Fovissste la Rosita","Ampliación La Rosita","Ampliación Las Margarits","Ampliación Margaritas","Ampliación Nazas","Ampliación Senderos","Ampliación Zaragoza Sur","Ampliación el Fresno","Ampliación la Fuentes","Ampliación la Joya","Ampliación los Angeles","Ampliación los Nogales","Angeles 2 y 3","Anna","Antigua Aceitera","Aquiles Serdan","Arboledas","Arenal","Arenales","Arezzo","Aurea","Av. Carranza","Azulejos","Bella Vista","Blvd. Bravo","Blvd. Revolución a Diagonal Reforma","Buenos Aires","Calera Solares","Calle 8 a la 13","Calle 9 a Independencia","Camilo Torres","Campestre Montebello","Campo Nuevo","Campo Nuevo II","Campo Nuevo Zaragoza","Casa Blanca","Casas Geo","Castello","Centenario","Cerrada Allende","Cerrada Ibero","Cerradas la Joya","Cerro de la Cruz","Chapultepec","Cipreses S y N","Ciudad Nazas","Col Las Rosas","Col. Abastos","Col. Almendros 1 y 2","Col. Ampliación Lazaro Cardenas","Col. Ampliación Santiago","Col. Aviación","Col. Bocanegra","Col. Campestre","Col. Carmen Romero","Col. Carolinas","Col. Castaños","Col. Centro","Col. Ciudad Nazas","Col. División del Norte","Col. Elsa Hernández","Col. Estella","Col. Estrella","Col. Fco. Villa","Col. Fidel Velazquez","Col. Gustavo Diaz Ordaz","Col. Ibero Magisterial","Col. J. Luz Torres","Col. Joyas del Bosque","Col. Julietas","Col. Kalia","Col. Las Etnias","Col. Las Julietas","Col. Las Profesionistas","Col. Las Torres","Col. Lazaro Cárdenas","Col. Loma Real 1","Col. Lomas","Col. Los Profesionistas","Col. Lucio Cabañas","Col. Magdalenas","Col. Manhatan","Col. Mayran","Col. Merced 2","Col. Moctezuma","Col. Montebello","Col. Navarro","Col. Nva. California","Col. Nvo. Torreón","Col. Palmas Aeropuerto","Col. Pequeña Zona Industrial","Col. Plan de San Luis","Col. Puerta Real","Col. Puerta de Hierro","Col. Residencial Hacienda","Col. Residencial del Norte","Col. Rincon San Salvador","Col. Rincon del Desierto","Col. Rincon la Merced","Col. Rincón y Jardínes las Etnias","Col. Roma","Col. Salvador Allende","Col. San Felipe 1 y 2","Col. Santa María","Col. Santa fe","Col. Santiago Ramírez","Col. Sección 38","Col. Sonterra","Col. Torreon Residencial","Col. Torreón Residencial","Col. Valle Oriente","Col. Villa California","Col. Villas de San Angele","Col. Villas del Valle","Col. Villas la Merced","Col.Ejido La Merced","Col.Tirra y Libertad","Colonia La Rosita","Compresora","Constancia","Cuauhtemoc a la calle 21","De Revolución a Independencia","De la Colón a Calle 9","Dunss de Ote.","Durangueña","Eduardo Guerra","Ej. Allende","Ej. San Antonio","Ejido Aguila","Ejido La Paz","Ejido La Perla","Ejido Los Rodríguez","Ejido San Luis","Ejido Santa Fe","Ejido Unión","Ejido Zaragoza","Ejido el Ranchito","Ejido la Joya","El Oasis","El Pedregal","El Peru","El Rosario","El Siglo","Eugenio Aguirre","Ex Hacienda La Joya","Ex Hacienda La Perla","Ex Hacienda los Angeles","Falia","Fco. I. Madero","Ferrobella","Fovisste","Fovviste Nvo. Los Angeles","Fraccioamiento Muralla","Fraccionamiemnto San Armando","Fraccionamiento Ana","Fraccionamiento La Paz","Fraccionamiento Nazas","Fraccionamiento Viñedos","Francisco Villa Poniente","Frondoso","Fuentes del Sur","Granja San Isidro","Hacienda San Jose","Hacienda Sta. Maria","Hacienda el Rosario","Hogares Ferrocarrileros","Independencia","Isabeles","Jacarandas","Jacobo Meller","Jardines San Agustin","Jardines Universidad","Jardines de California","Jardines del Sol","Jose Mijarez","Joyas de Torreón","Joyas del Bosque 2","Joyas del Desierto","Kiosko","La 1°ra de Mayo","La Amistad","La Braulio","La Concha","La Cortina","La Cuchilla","La Espeanza","La Fe","La Fuente","La Latinoamericano II","La Merced","La Mina","La Morelos","La Noria","La Palma","La Partida","La Victoria","La perla","La rosita","Lagos","Laguna Nte.","Laguna Sur","Las Aves","Las Dalias","Las Flores","Las Luisas","Las Misiones","Las Palmas","Las Quintas","Las Trojes","Las Viñas","Latino 1","Latinoamericana II","Lazaro Cardenas","Libertad","Loma Real 1","Loma Real 2","Loma Real 3","Loma Real 4","Los Agaves","Los Laureles","Los Llanos","Los Nogales","Lucio Blanco","Luis Echeverria","M. Mercado López Sánchez","Maclovio Herrera","Margaritas","Marquez","Martínez Adame","Miguel Aleman","Moderna","Monterreal","Moretto","Nazario Ortiz","Nazas","Nogalar","Nogales","Nvo. Allende","Nvo. Los Angeles","Nvo. San Isidro","Obispado","Pacifico","Palma Real","Palma San Isidro","Palo Blanco","Paque Industrial Ote","Paraiso del Nazas","Paseo del Aguila","Piligono 2do. 4ta. Ciudad Nazas","Polvorera","Privadas de Santa Fe","Quinta San Antonio (2)","Quintas Laguna","Quintas Nazas","Quintas Nogales","Quintas San Isidro","Quintas del Bosque","Quintas la Merced","Quintas la Perla","Rancho Alegre","Rancho Ana","Real del Sol","Residencial 21","Residencial Los Fresnos","Residencial Palma","Residencial Victoria","Residencial Viñedos","Residencial del Nazas","Residencial el Fresno","Revolución a Diagonal Reforma","Revolución a la Calle Guerrero","Ricardo Flores Magon","Rincolada 1° y 2°","Rincon La rosita","Rincon Los Nogales","Rincon San José","Rincon Santa Fe","Rincon del Bosque","Rincón San Angel","Roble 1 y 2","Rovirosa Wade","San Agustin","San Angel","San Diego","San Isidro","San Luciano","San Marino","Santa Anita","Santa Barbara","Santa Elena","Santa Sofia","Satelite 1 y 2","Secreto 1","Secreto2","Senderos 1","Senderos 2","Sol de Ote","Tajito","Toledo","Torreón 2000","Torreón Residencial","VIlla Jardin","Valle Dorado","Valle Verde","Valle del Nazas","Vencedora","Veredas Santa Fe","Veredas la Paz","Vicente Guerrero","Victoria","Villa Florida","Villa Frondoso","Villa Jacarandas","Villa Renacimiento","Villa Romana","Villas La Rosita","Villas San Agustin","Villas San Isidro","Villas Santorini","Villas Universidad","Villas Zaragoza","Villas de la Hacienda","Villas de la Ibero","Villas del Sol","Villas la Merced","Vista Hermosa","Viñas las Palmas","Viñedos Norte","Zacatecas","Zaragoza Nte.","Zaragoza Sur","Zona Industrial","de la calle 22 a la Juan Belz"];
 const CALLES   = ["Av. Hidalgo","Av. Juárez","Av. Morelos","Blvd. Constitución","Blvd. Independencia","Blvd. Revolución","Calz. Colón","Diag. Reforma","Paseo de la Rosita","Paseo del Tec","Periférico","Rodríguez Triana","Saltillo 400"].sort();
 const CONFIG_SERV = {
-  "Tolvas y Contenedores": { acts:["Recolección","Cambio","Retiro"],           pre:"TOL"  },
+  "Contenedores":          { acts:["Recolección","Cambio","Retiro"],            pre:"CON"  },
+  "Tolvas":                { acts:["Recolección","Cambio","Retiro"],            pre:"TOL"  },
   "Barrido Manual":        { acts:["Bolseo","Recolección Desecho","Limpieza General"], pre:"BM"   },
   "Barrido Selectivo":     { acts:["Bolseo","Desecho Vegetal","Limpieza General","Animal Muerto","Escombro"], pre:"BS"   },
   "Barrido Mecánico":      { acts:["Completo","Incompleto"],                   pre:"BMEC" },
@@ -2390,7 +2556,7 @@ const RUBROS = [
     {id:"R2C2",txt:"Los vehículos cuentan con documentación vigente (placas, verificación, seguro)",peso:3},
     {id:"R2C3",txt:"No se observan fugas de lixiviados durante la operación",peso:3},
     {id:"R2C4",txt:"La compactadora o mecanismo de carga funciona correctamente",peso:2},
-    {id:"R2C5",txt:"Las unidades portan identificación visible de PASA y número económico",peso:1}]},
+    {id:"R2C5",txt:"Las unidades portan identificación visible de CEA y número económico",peso:1}]},
   { id:"R3", nombre:"Personal Operativo", criterios:[
     {id:"R3C1",txt:"El personal porta uniforme completo y en buen estado",peso:2},
     {id:"R3C2",txt:"Se utilizan equipos de protección personal (guantes, botas, chaleco)",peso:3},
@@ -2448,7 +2614,7 @@ tick(); setInterval(tick,30000);
 // ── LOADER / FLASH ────────────────────────────────────────────
 function showLoader(msg='Procesando…'){ document.getElementById('lo-text').innerHTML=msg; document.getElementById('loader-overlay').style.display='flex'; }
 function hideLoader(){ document.getElementById('loader-overlay').style.display='none'; }
-function flash(msg='Guardado'){ const f=document.getElementById('success-flash'); document.getElementById('flash-msg').textContent=msg; f.style.display='flex'; setTimeout(()=>f.style.display='none',3500); }
+function flash(msg='Guardado', type='success'){ const f=document.getElementById('success-flash'); const icon=document.getElementById('flash-icon'); document.getElementById('flash-msg').textContent=msg; if(type==='error'){f.classList.add('flash-error');icon.className='fas fa-times-circle';}else{f.classList.remove('flash-error');icon.className='fas fa-check';} f.style.display='flex'; setTimeout(()=>f.style.display='none',3500); }
 
 // ── MODAL ─────────────────────────────────────────────────────
 function cerrarModal(id){ document.getElementById(id).classList.remove('open'); }
@@ -2456,8 +2622,8 @@ function cerrarModal(id){ document.getElementById(id).classList.remove('open'); 
 // ── NAVEGACIÓN ───────────────────────────────────────────────
 // Módulos permitidos por rol
 const ROL_ACCESO = {
-  administrador: ['dashboard','bascula','diario','auditoria','rutas','tolvas','penalidades','sanciones','clausulas','organismo','multas','exportar','reportes','usuarios','lista-negra'],
-  supervisor:    ['diario','rutas','tolvas'],
+  administrador: ['dashboard','bascula','diario','auditoria','rutas','tolvas','penalidades','sanciones','clausulas','organismo','multas','exportar','reportes','usuarios','lista-negra','ordenes'],
+  supervisor:    ['diario','rutas','tolvas','ordenes'],
   pesaje:        ['bascula'],
   auditor:       ['auditoria'],
   enlace:        ['reportes'],
@@ -2487,6 +2653,7 @@ function nav(name, el){
   if(name==='reportes')   renderReportesTable();
   if(name==='usuarios')   abrirModuloUsuarios();
   if(name==='lista-negra') renderListaNegra();
+  if(name==='ordenes')    renderOrdenes();
 }
 
 // ════ INIT ════
@@ -2500,13 +2667,34 @@ function initApp(){
   ['b-hora-entrada','b-hora-salida'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=hora; });
 
   const fill=(id,arr)=>{ const dl=document.getElementById(id); if(!dl)return; dl.innerHTML=''; arr.forEach(v=>{const o=document.createElement('option');o.value=v;dl.appendChild(o);}); };
-  fill('lista-colonias',COLONIAS); fill('lista-calles',CALLES);
+  fill('lista-calles',CALLES);
 
-  // Poblar select de colonias y servicios en el formulario de reportes
-  const rpCol = document.getElementById('rp-colonia');
-  if (rpCol) {
-    COLONIAS.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; rpCol.appendChild(o); });
-  }
+  // Cargar colonias dinámicamente desde el catálogo de Rutas de Recolección
+  (async () => {
+    try {
+      const colonias = await api('GET', '/rutas/colonias');
+      if (Array.isArray(colonias) && colonias.length > 0) {
+        // Actualizar todos los datalists de colonia
+        ['lista-colonias'].forEach(id => fill(id, colonias));
+        // Poblar select de reportes ciudadanos
+        const rpCol = document.getElementById('rp-colonia');
+        if (rpCol) {
+          rpCol.innerHTML = '<option value="">— Seleccionar colonia —</option>';
+          colonias.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; rpCol.appendChild(o); });
+        }
+      } else {
+        // Fallback al catálogo local si la BD aún no tiene rutas
+        fill('lista-colonias', COLONIAS);
+        const rpCol = document.getElementById('rp-colonia');
+        if (rpCol) {
+          rpCol.innerHTML = '<option value="">— Seleccionar colonia —</option>';
+          COLONIAS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; rpCol.appendChild(o); });
+        }
+      }
+    } catch(_) {
+      fill('lista-colonias', COLONIAS);
+    }
+  })();
   const rpServ = document.getElementById('rp-servicio');
   if (rpServ) {
     Object.keys(CONFIG_SERV).forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; rpServ.appendChild(o); });
@@ -2733,7 +2921,7 @@ async function importarReportePDF(input) {
       body: fd
     });
     const data = await r.json();
-    if (!r.ok) { flash(data.error || 'Error al leer PDF'); return; }
+    if (!r.ok) { flash(data.error || 'Error al leer PDF', 'error'); return; }
     // Abrir el formulario de nuevo reporte y pre-llenar campos
     await abrirNuevoReporte();
     // Dar tiempo a que el form se muestre
@@ -2762,7 +2950,7 @@ async function importarReportePDF(input) {
     }
     flash('PDF importado — revisa y confirma los datos', 'success');
   } catch(e) {
-    flash('Error al importar PDF');
+    flash('Error al importar PDF', 'error');
   } finally {
     hideLoader();
   }
@@ -2969,11 +3157,14 @@ async function ejecutarCierreReporte(){
     if(d1) fd.append('foto_despues1', d1);
     if(d2) fd.append('foto_despues2', d2);
     await api('PATCH', `/reportes/${_reporteId}/cerrar`, fd, true);
+    const rId = _reporteId, rFolio = _reporteFolio;
     hideLoader();
     cerrarModal('modal-reporte');
     flash('Folio cerrado ✓');
     renderReportesTable();
     renderDashboard();
+    // Auto-subir PDF del reporte cerrado a Drive
+    await subirReportePDFaDrive(rId, rFolio);
   } catch(err) { hideLoader(); alert('Error: '+err.message); }
 }
 
@@ -3127,6 +3318,67 @@ function gpsMeReporte(){
   }, e=>alert('Error GPS: '+e.message));
 }
 
+async function subirReportePDFaDrive(reporteId, folio) {
+  if (!reporteId) return;
+  showLoader('Subiendo reporte a Drive…');
+  try {
+    const r = await api('GET', `/reportes/${reporteId}`);
+    const s = id => document.getElementById(id);
+    s('rca-pdf-folio').textContent      = r.folio;
+    s('rca-pdf-fecha').textContent      = r.fecha || '—';
+    s('rca-pdf-hora').textContent       = r.hora  || '—';
+    s('rca-pdf-origen').textContent     = r.origen || '—';
+    s('rca-pdf-folio073').textContent   = r.folio_073 || '—';
+    s('rca-pdf-nombre').textContent     = r.nombre || '—';
+    s('rca-pdf-fecha-prog').textContent = r.fecha_programada || 'Sin fecha programada';
+    s('rca-pdf-servicio').textContent   = r.servicio || '—';
+    s('rca-pdf-colonia').textContent    = r.colonia || '—';
+    s('rca-pdf-calle').textContent      = [r.calle, r.numero].filter(Boolean).join(' #') || '—';
+    s('rca-pdf-gps').textContent        = r.gps || '—';
+    s('rca-pdf-desc').textContent       = r.descripcion || '';
+    s('rca-pdf-ts').textContent         = new Date().toLocaleString('es-MX');
+
+    const imgEl = (elId, filename) => {
+      const el = document.getElementById(elId); if (!el) return;
+      el.src = filename ? `/uploads/${filename}` : '';
+      el.style.display = filename ? '' : 'none';
+    };
+    imgEl('rca-pdf-img-a1', r.foto_antes1);
+    imgEl('rca-pdf-img-a2', r.foto_antes2);
+
+    const sec = document.getElementById('rca-pdf-sec-cierre');
+    if (r.estado === 'cerrado') {
+      sec.style.display = '';
+      imgEl('rca-pdf-img-d1', r.foto_despues1);
+      imgEl('rca-pdf-img-d2', r.foto_despues2);
+      s('rca-pdf-fecha-cierre').textContent = `${r.fecha_cierre||''} ${r.hora_cierre||''}`.trim();
+      s('rca-pdf-obs-cierre').textContent   = r.obs_cierre || '';
+    }
+
+    // Esperar que las imágenes carguen
+    const imgs = ['rca-pdf-img-a1','rca-pdf-img-a2','rca-pdf-img-d1','rca-pdf-img-d2']
+      .map(id => document.getElementById(id)).filter(el => el && el.src && !el.src.endsWith('/'));
+    await Promise.all(imgs.map(el => {
+      if (el.complete && el.naturalWidth > 0) return Promise.resolve();
+      return new Promise(res => { el.onload = res; el.onerror = res; });
+    }));
+    await new Promise(res => setTimeout(res, 300));
+
+    const folioLimpio = (folio || reporteId).toString().replace(/[\/]/g, '-');
+    const filename = `CEA_Reporte_${folioLimpio}.pdf`;
+    const pdfCfg = {
+      margin: [10,10,10,10], filename,
+      html2canvas: { scale:2, useCORS:true },
+      jsPDF: { unit:'mm', format:'letter', orientation:'portrait' }
+    };
+    await html2pdf().set(pdfCfg).from(document.getElementById('rcaPDF')).save();
+    flash('PDF del reporte descargado ✔');
+  } catch(err) {
+    flash('Error al generar el PDF: ' + (err.message || 'Error desconocido'), 'error');
+  }
+  hideLoader();
+}
+
 async function exportReportePDF(){
   if(!_reporteId) return;
   showLoader('Generando PDF…');
@@ -3169,7 +3421,7 @@ async function exportReportePDF(){
 
     await html2pdf().set({
       margin: [10,10,10,10],
-      filename: `PASA_Reporte_${r.folio.replace(/\//g,'-')}.pdf`,
+      filename: `CEA_Reporte_${r.folio.replace(/\//g,'-')}.pdf`,
       html2canvas: { scale:2, useCORS:true },
       jsPDF: { unit:'mm', format:'letter', orientation:'portrait' }
     }).from(document.getElementById('rcaPDF')).save();
@@ -3215,13 +3467,16 @@ async function renderDashboard(){
     ].sort((a,b)=>b.id-a.id).slice(0,10);
 
     const cont=document.getElementById('dash-recientes');
-    if(all.length===0){cont.innerHTML='<div class="empty"><div class="empty-icon">📊</div><p>Sin actividad registrada</p></div>';return;}
-    const clsMap={Boleta:'b-yellow',Diario:'b-green','Supervisión':'b-purple'};
-    cont.innerHTML=`<table><thead><tr><th>Tipo</th><th>Folio</th><th>Detalle</th><th>Fecha</th></tr></thead><tbody>`+
-      all.map(r=>`<tr><td><span class="badge ${clsMap[r._cat]||'b-gray'}">${r._cat}</span></td>
-        <td class="mono">${r.folio||'—'}</td>
-        <td style="font-size:12px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r._det}</td>
-        <td>${r._fecha||'—'}</td></tr>`).join('')+'</tbody></table>';
+    if(all.length===0){
+      cont.innerHTML='<div class="empty"><div class="empty-icon">📊</div><p>Sin actividad registrada</p></div>';
+    } else {
+      const clsMap={Boleta:'b-yellow',Diario:'b-green','Supervisión':'b-purple'};
+      cont.innerHTML=`<table><thead><tr><th>Tipo</th><th>Folio</th><th>Detalle</th><th>Fecha</th></tr></thead><tbody>`+
+        all.map(r=>`<tr><td><span class="badge ${clsMap[r._cat]||'b-gray'}">${r._cat}</span></td>
+          <td class="mono">${r.folio||'—'}</td>
+          <td style="font-size:12px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r._det}</td>
+          <td>${r._fecha||'—'}</td></tr>`).join('')+'</tbody></table>';
+    }
   // Historial de sesiones (solo admin)
   if (currentRol === 'administrador') {
     try {
@@ -3313,7 +3568,7 @@ function abrirReporteEjecutivo() {
 }
 
 // ════ HELPERS NÚMERO ECONÓMICO ════
-const _SERV_CON_ECO = new Set(['Carga Trasera','Tolvas y Contenedores','Barrido Mecánico']);
+const _SERV_CON_ECO = new Set(['Carga Trasera','Contenedores','Tolvas','Barrido Mecánico']);
 
 function toggleAudNumEco() {
   const serv = document.getElementById('a-tipo-serv').value;
@@ -3333,7 +3588,7 @@ function toggleEdUnidad() {
 // ════ BÁSCULA / BOLETA ════
 function onTipoServicio(){
   const v = document.getElementById('b-tipo').value;
-  document.getElementById('box-abastos').style.display = v==='Tolvas y Contenedores' ? '' : 'none';
+  document.getElementById('box-abastos').style.display = (v==='Contenedores'||v==='Tolvas') ? '' : 'none';
 }
 function calcNeto(){
   const bruto=parseFloat(document.getElementById('b-peso-bruto').value)||0;
@@ -3432,7 +3687,8 @@ function _formBoleta(r){
     <div class="form-group"><label>Tipo de Servicio *</label>
       <select id="ed-tipo">
         <option ${r.tipo_servicio==='Carga Trasera'?'selected':''}>Carga Trasera</option>
-        <option ${r.tipo_servicio==='Tolvas y Contenedores'?'selected':''}>Tolvas y Contenedores</option>
+        <option ${r.tipo_servicio==='Contenedores'?'selected':''}>Contenedores</option>
+        <option ${r.tipo_servicio==='Tolvas'?'selected':''}>Tolvas</option>
       </select>
     </div>
     <div class="form-group"><label>Procedencia</label>
@@ -3483,7 +3739,7 @@ function _formBoleta(r){
 }
 
 function _formDiario(r){
-  const svcs=['Tolvas y Contenedores','Barrido Manual','Barrido Selectivo','Barrido Mecánico','Carga Trasera'];
+  const svcs=['Contenedores','Tolvas','Barrido Manual','Barrido Selectivo','Barrido Mecánico','Carga Trasera'];
   const svcOpts = svcs.map(s=>`<option ${r.servicio===s?'selected':''}>${s}</option>`).join('');
   return `<div class="form-grid" style="gap:10px 14px;">
     <div class="form-group"><label>Folio</label>
@@ -3495,7 +3751,7 @@ function _formDiario(r){
     <div class="form-group"><label>Hora</label>
       <input type="time" id="ed-hora" value="${r.hora||''}">
     </div>
-    <div class="form-group fg-span2"><label>Responsable PASA *</label>
+    <div class="form-group fg-span2"><label>Responsable CEA *</label>
       <select id="ed-responsable" required>
         ${['Edgar Flores','Jorge Sanchez','Roberto Alvarado','Carlos González','Manuel García','Homero Elizalde'].map(n=>`<option${r.responsable===n?' selected':''}>${n}</option>`).join('')}
       </select>
@@ -3503,7 +3759,7 @@ function _formDiario(r){
     <div class="form-group"><label>Tipo de Servicio *</label>
       <select id="ed-servicio" onchange="toggleEdUnidad()">${svcOpts}</select>
     </div>
-    <div class="form-group" id="ed-box-unidad" style="${(r.servicio==='Carga Trasera'||r.servicio==='Barrido Mecánico'||r.servicio==='Tolvas y Contenedores')?'':' display:none;'}"><label>Número Económico de la Unidad</label>
+    <div class="form-group" id="ed-box-unidad" style="${(r.servicio==='Carga Trasera'||r.servicio==='Barrido Mecánico'||r.servicio==='Contenedores'||r.servicio==='Tolvas')?'':' display:none;'}"><label>Número Económico de la Unidad</label>
       <input type="text" id="ed-unidad" value="${r.unidad||''}" placeholder="Ej. CT-2898">
     </div>
     <div class="form-group"><label>GPS</label>
@@ -4270,7 +4526,7 @@ async function renderBoletasRecientes(){
     cont.innerHTML=`<table><thead><tr><th>Folio</th><th>Tipo</th><th>Procedencia</th><th>No. Eco.</th><th>Bruto kg</th><th>Tara kg</th><th>Neto kg</th><th>Fecha</th></tr></thead><tbody>`+
     data.map(b=>`<tr>
       <td class="mono">${b.folio}</td>
-      <td><span class="badge ${b.tipo_servicio==='Carga Trasera'?'b-blue':'b-yellow'}">${b.tipo_servicio}${b.abastos?' · Abastos':''}</span></td>
+      <td><span class="badge ${b.tipo_servicio==='Carga Trasera'?'b-blue':b.tipo_servicio==='Contenedores'?'b-green':'b-yellow'}">${b.tipo_servicio}${b.abastos?' · Abastos':''}</span></td>
       <td>${b.procedencia||'—'}</td>
       <td class="mono" style="${b.num_eco_valido===1?'color:var(--green);font-weight:700':b.num_eco_valido===0?'color:var(--red);font-weight:700':''}">
         ${b.num_eco||'—'}${b.num_eco_valido===1?' <span title="Unidad registrada">✓</span>':b.num_eco_valido===0?' <span title="No en catálogo">✗</span>':''}
@@ -4287,7 +4543,7 @@ async function renderBoletasRecientes(){
 async function cargarActDiario(){
   const serv=document.getElementById('d-servicio').value;
   const cfg=CONFIG_SERV[serv];
-  document.getElementById('d-box-unidad').style.display=(serv==='Carga Trasera'||serv==='Barrido Mecánico'||serv==='Tolvas y Contenedores')?'':'none';
+  document.getElementById('d-box-unidad').style.display=(serv==='Carga Trasera'||serv==='Barrido Mecánico'||serv==='Contenedores'||serv==='Tolvas')?'':'none';
   if(!cfg){document.getElementById('d-box-actividades').style.display='none';return;}
   document.getElementById('d-box-actividades').style.display='';
   const area=document.getElementById('d-checkboxes'); area.innerHTML='';
@@ -4298,10 +4554,10 @@ async function cargarActDiario(){
     const el = document.getElementById('diario-folio-display');
     if (el) el.textContent = folio;
   } catch(_) {}
-  // Dropdown de punto de servicio para Tolvas y Contenedores
+  // Dropdown de punto de servicio para Contenedores y Tolvas
   const boxPunto = document.getElementById('d-box-punto-tolva');
   const selPunto = document.getElementById('d-punto-tolva');
-  if (serv === 'Tolvas y Contenedores') {
+  if (serv === 'Contenedores' || serv === 'Tolvas') {
     document.getElementById('d-responsable').value = 'Miguel Vidaña';
     try {
       const { data: tolvas } = await api('GET', '/tolvas?estado=activo&limit=200');
@@ -4331,6 +4587,39 @@ function prevFoto(input,imgId,phId){
   }
 }
 
+async function toggleOrigenFolio() {
+  const tipo  = document.getElementById('d-origen-tipo').value;
+  const box   = document.getElementById('d-origen-folio-box');
+  const label = document.getElementById('d-origen-folio-label');
+  const input = document.getElementById('d-origen-folio');
+  const dl    = document.getElementById('d-origen-folio-list');
+  if (!tipo) { box.style.display = 'none'; input.value = ''; return; }
+  box.style.display = '';
+  if (tipo === 'orden') {
+    label.textContent = 'Folio Orden de Trabajo';
+    input.placeholder = 'Ej. OT-20260410-001';
+    // Cargar folios de órdenes activas
+    try {
+      // Cargar órdenes PENDIENTE y EN_PROCESO (ambas son atendibles)
+      const [r1, r2] = await Promise.all([
+        api('GET', '/ordenes?estado=PENDIENTE&limit=200'),
+        api('GET', '/ordenes?estado=EN_PROCESO&limit=200'),
+      ]);
+      const rows = [...(r1.data||[]), ...(r2.data||[])];
+      dl.innerHTML = rows.map(r => `<option value="${r.folio}">${r.folio} — ${r.dirigida_a||''} — ${r.descripcion?.slice(0,40)||''}</option>`).join('');
+    } catch(_) {}
+  } else {
+    label.textContent = 'Folio Reporte Ciudadano';
+    input.placeholder = 'Ej. DLM/RCA/0012';
+    // Cargar folios de reportes abiertos
+    try {
+      const res = await api('GET', '/reportes?estado=abierto&limit=200');
+      const rows = res.data || [];
+      dl.innerHTML = rows.map(r => `<option value="${r.folio}">${r.folio} — ${r.colonia||''} — ${r.descripcion?.slice(0,40)||''}</option>`).join('');
+    } catch(_) {}
+  }
+}
+
 async function guardarDiario(e){
   e.preventDefault();
   const serv=document.getElementById('d-servicio').value;
@@ -4352,7 +4641,9 @@ async function guardarDiario(e){
     fd.append('numero',        document.getElementById('d-numero').value||'S/N');
     fd.append('actividades',   acts||'Sin especificar');
     fd.append('observaciones', document.getElementById('d-obs').value);
-    fd.append('punto_tolva', document.getElementById('d-punto-tolva')?.value || '');
+    fd.append('punto_tolva',   document.getElementById('d-punto-tolva')?.value || '');
+    fd.append('origen_tipo',   document.getElementById('d-origen-tipo').value  || '');
+    fd.append('origen_folio',  document.getElementById('d-origen-folio').value || '');
     const f1=document.getElementById('d-foto1-inp')?.files?.[0];
     const f2=document.getElementById('d-foto2-inp')?.files?.[0];
     if(f1) fd.append('foto1',f1);
@@ -4367,9 +4658,15 @@ async function guardarDiario(e){
     document.getElementById('d-box-actividades').style.display='none';
     document.getElementById('d-box-unidad').style.display='none';
     document.getElementById('d-box-punto-tolva').style.display='none';
+    document.getElementById('d-origen-tipo').value = '';
+    document.getElementById('d-origen-folio').value = '';
+    document.getElementById('d-origen-folio-box').style.display = 'none';
     renderDiarioTable();
     renderDashboard();
-    flash(`Registro ${created.folio} guardado ✔`);
+    const origenTipo  = document.getElementById('d-origen-tipo').value;
+    const origenFolio = document.getElementById('d-origen-folio').value.trim();
+    const msgExtra = (origenTipo === 'orden' && origenFolio) ? ` · OT ${origenFolio} cerrada ✔` : '';
+    flash(`Registro ${created.folio} guardado ✔${msgExtra}`);
     // Generar y subir PDF automáticamente
     const img1 = created.foto1 ? `/uploads/${created.foto1}` : '';
     const img2 = created.foto2 ? `/uploads/${created.foto2}` : '';
@@ -4393,12 +4690,23 @@ async function renderDiarioTable(){
     const qs=new URLSearchParams({q,limit:50,fechaIni:ini,fechaFin:fin}).toString();
     const {data} = await api('GET',`/diario?${qs}`);
     if(data.length===0){cont.innerHTML='<div class="empty"><div class="empty-icon">📋</div><p>Sin registros</p></div>';return;}
-    cont.innerHTML=`<table><thead><tr><th>Folio</th><th>Fecha</th><th>Responsable</th><th>Servicio</th><th>Colonia</th><th>Actividades</th><th>Auditado</th><th></th></tr></thead><tbody>`+
+    const origenBadge = r => {
+      if (!r.origen_tipo) return '—';
+      const ico  = r.origen_tipo === 'orden' ? '📋' : '📣';
+      const lbl  = r.origen_tipo === 'orden' ? 'OT' : 'RC';
+      const col  = r.origen_tipo === 'orden' ? 'var(--accent)' : 'var(--yellow)';
+      const folio = r.origen_folio
+        ? `<span style="font-family:var(--font-mono);font-size:10px;">${r.origen_folio}</span>`
+        : '';
+      return `<span style="font-size:11px;color:${col};font-weight:600;">${ico} ${lbl}</span>${folio ? '<br>'+folio : ''}`;
+    };
+    cont.innerHTML=`<table><thead><tr><th>Folio</th><th>Fecha</th><th>Responsable</th><th>Servicio</th><th>Colonia</th><th>Actividades</th><th>Origen</th><th>Auditado</th><th></th></tr></thead><tbody>`+
     data.map(r=>`<tr>
       <td class="mono">${r.folio}</td><td>${r.fecha||'—'}</td><td>${r.responsable||'—'}</td>
       <td><span class="badge b-green">${r.servicio||'—'}</span></td>
       <td>${r.colonia||'—'}</td>
-      <td style="font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.actividades||'—'}</td>
+      <td style="font-size:11px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.actividades||'—'}</td>
+      <td style="white-space:nowrap;">${origenBadge(r)}</td>
       <td>${r.auditado?'<span class="badge b-blue">✓</span>':'<span class="badge b-gray">—</span>'}</td>
       <td><button class="btn btn-outline btn-xs" onclick="exportDiarioPDFById(${r.id})">PDF</button></td>
     </tr>`).join('')+'</tbody></table>';
@@ -4501,30 +4809,11 @@ async function buildDiarioPDF(d,img1,img2){
     jsPDF:{unit:'mm',format:'letter',orientation:'portrait'}
   }).from(document.getElementById('hojaPDF'));
 
-  const folderId = GDRIVE_FOLDER_MAP[d.servicio];
-  if (folderId) {
-    try {
-      showLoader('Subiendo a Google Drive…');
-      const jspdfInst = await pdfWorker.toPdf().get('pdf');
-      const blob = jspdfInst.output('blob');
-      const file = await subirPDFaDrive(blob, filename, folderId);
-      hideLoader();
-      const link = file.webViewLink ? `<a href="${file.webViewLink}" target="_blank" style="color:var(--accent);text-decoration:underline;">Ver en Drive</a>` : '';
-      // toast de éxito
-      const t = document.createElement('div');
-      t.innerHTML = `✅ PDF guardado en Google Drive${link ? ' · ' + link : ''}`;
-      Object.assign(t.style, {position:'fixed',bottom:'24px',right:'24px',background:'var(--surface2)',border:'1px solid var(--accent)',color:'var(--text)',padding:'12px 18px',borderRadius:'10px',zIndex:9999,fontSize:'13px',boxShadow:'0 4px 20px rgba(0,0,0,.4)',maxWidth:'340px'});
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), 6000);
-    } catch(err) {
-      hideLoader();
-      if (confirm(`No se pudo subir a Drive: ${err.message}\n\n¿Descargar el PDF localmente?`)) {
-        await pdfWorker.save();
-      }
-    }
-  } else {
-    // Tipo de servicio sin carpeta configurada → descarga normal
+  try {
     await pdfWorker.save();
+    flash('PDF descargado ✔');
+  } catch(err) {
+    flash('Error al generar el PDF: ' + (err.message || 'Error'), 'error');
   }
   hideLoader();
 }
@@ -4830,15 +5119,12 @@ async function exportAuditoriaPDF(folioParam){
   const folio = folioParam || document.getElementById('aud-folio-display').textContent;
   const filename = `Supervision_${folio.replace(/[/\\]/g,'-')}.pdf`;
   const pdfCfg = {margin:0,filename,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'letter',orientation:'portrait'}};
-  showLoader('Subiendo PDF a Drive…');
+  showLoader('Generando PDF…');
   try {
-    const jspdfInst = await html2pdf().set(pdfCfg).from(document.getElementById('auditoriaPDF')).toPdf().get('pdf');
-    const blob = jspdfInst.output('blob');
-    await subirPDFaDrive(blob, filename, '1nMCCaBvy7qvfxA_Ch2y1MHqNka2Rx8EI');
-    flash('PDF de supervisión subido a Drive ✔');
-  } catch(driveErr) {
-    console.warn('Drive upload failed, descargando localmente:', driveErr);
     await html2pdf().set(pdfCfg).from(document.getElementById('auditoriaPDF')).save();
+    flash('PDF de supervisión descargado ✔');
+  } catch(err) {
+    flash('Error al generar el PDF: ' + (err.message || 'Error'), 'error');
   }
   hideLoader();
 }
@@ -5081,7 +5367,7 @@ function descargarPDFActa(a){
   }
   const tp=doc.internal.getNumberOfPages();
   for(let p=1;p<=tp;p++){doc.setPage(p);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(150,150,150);doc.text(`Folio #${a.folio} · ${a.fecha||''} · Dirección de Limpieza · R. Ayuntamiento de Torreón`,ML,272);doc.text(`Página ${p} de ${tp}`,PW-MR,272,{align:'right'});doc.setTextColor(0,0,0);}
-  doc.save(`Acta_PASA_Folio_${a.folio}_${a.fecha||'2026'}.pdf`);
+  doc.save(`Acta_CEA_Folio_${a.folio}_${a.fecha||'2026'}.pdf`);
 }
 
 // ════ REUNIONES ════
@@ -5277,35 +5563,36 @@ async function renderMultas(){
 
 // ════ RUTAS DE RECOLECCIÓN ════
 let _rutasPendientes = [];
+let _rutaId = null;
 
 async function renderRutasTable() {
-  const q    = (document.getElementById('rutas-q')    || {}).value || '';
-  const zona = (document.getElementById('rutas-zona') || {}).value || '';
-  const dias = (document.getElementById('rutas-dias') || {}).value || '';
+  const q           = (document.getElementById('rutas-q')           || {}).value || '';
+  const zona        = (document.getElementById('rutas-zona')        || {}).value || '';
+  const dias        = (document.getElementById('rutas-dias')        || {}).value || '';
+  const responsable = (document.getElementById('rutas-responsable') || {}).value || '';
+  const turno       = (document.getElementById('rutas-turno')       || {}).value || '';
   const wrap = document.getElementById('rutas-table-wrap');
   if (!wrap) return;
 
   try {
-    const qs = new URLSearchParams({ q, zona, dias }).toString();
+    const qs = new URLSearchParams({ q, zona, dias, responsable, turno }).toString();
     const { data } = await api('GET', `/rutas?${qs}`);
 
-    // Actualizar stats
     try {
       const stats = await api('GET', '/rutas/stats');
       const cnt = document.getElementById('rutas-stats');
       if (cnt) {
-        const zonaHtml = (stats.por_zona || []).map(z =>
-          `<span style="background:var(--surface3);border-radius:4px;padding:2px 7px;font-size:12px;margin-right:6px;"><strong>${z.zona||'?'}</strong>: ${z.n}</span>`
-        ).join('');
+        const respHtml = (stats.por_responsable || []).map(r =>
+          `<span style="font-size:11px;"><strong>${r.responsable||'?'}</strong>: ${r.rutas} rtas / ${r.colonias} cols</span>`
+        ).join(' &nbsp;·&nbsp; ');
         cnt.innerHTML = `
           <div class="stat-card sc-blue"><div class="stat-label">Total Colonias</div><div class="stat-val">${stats.total_colonias}</div><div class="stat-sub">En catálogo</div></div>
           <div class="stat-card sc-yellow"><div class="stat-label">Rutas Activas</div><div class="stat-val">${stats.total_rutas}</div><div class="stat-sub">Distintas</div></div>
           <div class="stat-card sc-green"><div class="stat-label">Unidades</div><div class="stat-val">${stats.total_unidades}</div><div class="stat-sub">En operación</div></div>
-          <div class="stat-card sc-purple"><div class="stat-label">Por Zona</div><div class="stat-val" style="font-size:13px;line-height:1.8;">${zonaHtml||'—'}</div><div class="stat-sub">Distribución</div></div>`;
+          <div class="stat-card sc-purple"><div class="stat-label">Por Responsable</div><div class="stat-val" style="font-size:11px;line-height:1.9;">${respHtml||'—'}</div></div>`;
       }
     } catch(_) {}
 
-    // Badge nav
     const nb = document.getElementById('nb-rutas');
     if (nb) nb.textContent = data.length || '';
 
@@ -5321,41 +5608,114 @@ async function renderRutasTable() {
       if (v === 'SUR')    return '<span class="badge b-green" style="font-size:10px;">Sur</span>';
       return '<span class="badge b-yellow" style="font-size:10px;">Centro</span>';
     };
-
     const diasBadge = d => {
       if (!d) return '<span style="color:var(--muted);">—</span>';
       const l = d.toLowerCase();
-      if (l.includes('lunes'))  return '<span style="font-size:11px;color:var(--accent);">Lun · Mié · Vie</span>';
-      if (l.includes('martes')) return '<span style="font-size:11px;color:var(--green);">Mar · Jue · Sáb</span>';
+      if (l.includes('lunes') && !l.includes('martes')) return '<span style="font-size:11px;color:var(--accent);">Lun · Mié · Vie</span>';
+      if (l.includes('martes') && !l.includes('lunes')) return '<span style="font-size:11px;color:var(--blue);">Mar · Jue · Sáb</span>';
+      if (l.includes('lunes') && l.includes('martes'))  return '<span style="font-size:11px;color:var(--purple);">Lun – Sáb</span>';
       return `<span style="font-size:11px;color:var(--muted);">${d}</span>`;
+    };
+    const turnoBadge = t => {
+      if (!t) return '<span style="color:var(--muted);">—</span>';
+      if (t === 'Matutino')   return '<span class="badge b-yellow" style="font-size:10px;">☀ Matutino</span>';
+      if (t === 'Vespertino') return '<span class="badge b-blue"   style="font-size:10px;">🌙 Vespertino</span>';
+      return '<span class="badge b-purple" style="font-size:10px;">⇄ Mixto</span>';
     };
 
     const rows = data.map(r => `
       <tr>
-        <td style="font-family:var(--font-mono);font-weight:700;color:var(--accent);text-align:center;">${r.ruta ?? '—'}</td>
-        <td style="font-family:var(--font-mono);font-size:12px;">${r.num_unidad || '—'}</td>
-        <td>${r.colonia}</td>
+        <td class="mono" style="font-weight:700;color:var(--accent);text-align:center;">${r.ruta ?? '—'}</td>
+        <td style="font-size:12px;color:var(--muted);">${r.responsable || '—'}</td>
+        <td style="font-size:12.5px;">${r.colonia}</td>
+        <td class="mono" style="font-size:12px;">${r.num_unidad || '—'}</td>
         <td>${diasBadge(r.dias)}</td>
-        <td style="font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${r.horarios||''}">${r.horarios || '—'}</td>
+        <td>${turnoBadge(r.turno)}</td>
+        <td style="font-size:11px;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${r.horarios||''}">${r.horarios || '—'}</td>
         <td>${zonaBadge(r.zona)}</td>
+        <td><button class="btn btn-outline btn-sm" onclick="abrirEditarRuta(${r.id})">✏️</button></td>
       </tr>`).join('');
 
     wrap.innerHTML = `
-      <table class="data-table">
+      <table>
         <thead><tr>
-          <th style="width:60px;text-align:center;">Ruta</th>
-          <th style="width:100px;">Unidad</th>
+          <th style="width:55px;text-align:center;">Ruta</th>
+          <th style="width:140px;">Responsable</th>
           <th>Colonia</th>
+          <th style="width:80px;">Unidad</th>
           <th style="width:120px;">Días</th>
-          <th style="width:160px;">Horario</th>
-          <th style="width:80px;">Zona</th>
+          <th style="width:110px;">Turno</th>
+          <th style="width:155px;">Horario</th>
+          <th style="width:75px;">Zona</th>
+          <th style="width:44px;"></th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <div style="padding:8px 16px;font-size:11px;color:var(--muted);text-align:right;">${data.length} registros</div>`;
+      <div style="padding:8px 16px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);">${data.length} registros</div>`;
   } catch (e) {
     wrap.innerHTML = `<div style="padding:20px;color:var(--red);">Error al cargar: ${e.message}</div>`;
   }
+}
+
+function abrirNuevaRuta() {
+  _rutaId = null;
+  document.getElementById('modal-ruta-titulo').textContent = 'Nueva Ruta';
+  document.getElementById('btn-del-ruta').style.display = 'none';
+  ['rt-ruta','rt-unidad','rt-colonia','rt-horarios'].forEach(id => document.getElementById(id).value = '');
+  ['rt-responsable','rt-dias','rt-turno','rt-zona'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('modal-ruta').classList.add('open');
+}
+
+async function abrirEditarRuta(id) {
+  _rutaId = id;
+  document.getElementById('modal-ruta-titulo').textContent = 'Editar Ruta';
+  document.getElementById('btn-del-ruta').style.display = '';
+  const r = await api('GET', `/rutas/${id}`);
+  document.getElementById('rt-ruta').value        = r.ruta        || '';
+  document.getElementById('rt-unidad').value      = r.num_unidad  || '';
+  document.getElementById('rt-responsable').value = r.responsable || '';
+  document.getElementById('rt-colonia').value     = r.colonia     || '';
+  document.getElementById('rt-dias').value        = r.dias        || '';
+  document.getElementById('rt-turno').value       = r.turno       || '';
+  document.getElementById('rt-zona').value        = r.zona        || '';
+  document.getElementById('rt-horarios').value    = r.horarios    || '';
+  document.getElementById('modal-ruta').classList.add('open');
+}
+
+async function guardarRuta() {
+  const body = {
+    ruta:        parseInt(document.getElementById('rt-ruta').value) || null,
+    num_unidad:  document.getElementById('rt-unidad').value.trim(),
+    responsable: document.getElementById('rt-responsable').value,
+    colonia:     document.getElementById('rt-colonia').value.trim(),
+    dias:        document.getElementById('rt-dias').value,
+    turno:       document.getElementById('rt-turno').value,
+    zona:        document.getElementById('rt-zona').value,
+    horarios:    document.getElementById('rt-horarios').value.trim(),
+  };
+  if (!body.colonia) { alert('La colonia es obligatoria.'); return; }
+  showLoader('Guardando…');
+  try {
+    if (_rutaId) await api('PUT', `/rutas/${_rutaId}`, body);
+    else         await api('POST', '/rutas', body);
+    hideLoader();
+    cerrarModal('modal-ruta');
+    renderRutasTable();
+    flash(_rutaId ? 'Ruta actualizada' : 'Ruta registrada');
+  } catch(e) { hideLoader(); alert('Error: '+e.message); }
+}
+
+async function eliminarRuta() {
+  if (!_rutaId) return;
+  if (!confirm('¿Eliminar este registro? Esta acción no se puede deshacer.')) return;
+  showLoader('Eliminando…');
+  try {
+    await api('DELETE', `/rutas/${_rutaId}`);
+    hideLoader();
+    cerrarModal('modal-ruta');
+    renderRutasTable();
+    flash('Registro eliminado');
+  } catch(e) { hideLoader(); alert('Error: '+e.message); }
 }
 
 // ── Importación desde Excel ──────────────────────────────────
@@ -5557,7 +5917,7 @@ async function exportarExcelModulo(modulo, etiqueta, nombre, data, periodo) {
   const wb = XLSX.utils.book_new();
   const mappers = {
     diario: r => ({'Folio':r.folio,'Fecha':r.fecha,'Hora':r.hora,'Responsable':r.responsable,'Servicio':r.servicio,'No. Unidad':r.unidad,'GPS':r.gps,'Colonia':r.colonia,'Calle':r.calle,'Número':r.numero,'Actividades':r.actividades,'Observaciones':r.observaciones,'Auditado':r.auditado?'Sí':'No','Registrado':r.created_at}),
-    auditorias: r => ({'Folio':r.folio,'Folio Diario':r.folio_diario||'—','Fecha':r.fecha,'Hora':r.hora,'Turno':r.turno,'Auditor':r.auditor,'Rep. PASA':r.rep_pasa,'Zona':r.zona,'Tipo Servicio':r.tipo_servicio,'Calificación %':r.score,'Veredicto':r.veredicto,'Riesgo':r.riesgo,'Hallazgos':r.hallazgos,'Acciones':r.acciones,'Plazo':r.plazo,'Registrado':r.created_at}),
+    auditorias: r => ({'Folio':r.folio,'Folio Diario':r.folio_diario||'—','Fecha':r.fecha,'Hora':r.hora,'Turno':r.turno,'Auditor':r.auditor,'Rep. CEA':r.rep_pasa,'Zona':r.zona,'Tipo Servicio':r.tipo_servicio,'Calificación %':r.score,'Veredicto':r.veredicto,'Riesgo':r.riesgo,'Hallazgos':r.hallazgos,'Acciones':r.acciones,'Plazo':r.plazo,'Registrado':r.created_at}),
     actas: r => ({'Folio':'#'+r.folio,'Fecha':r.fecha,'Hora Inicio':r.hora_ini,'Hora Fin':r.hora_fin,'Área':r.area,'Infracción':r.infraccion,'Domicilio':r.domicilio,'Quien Atiende':r.atiende,'Cargo':r.cargo,'Testigo 1':r.testigo1,'Testigo 2':r.testigo2,'UMAs':r.umas,'Fecha Audiencia':r.fecha_aud,'Estado':r.estado,'Hallazgos':r.hallazgos,'Registrado':r.created_at}),
     boletas: r => ({'Folio':r.folio,'Tipo Servicio':r.tipo_servicio,'Proviene Abastos':r.abastos?'Sí':'No','Procedencia':r.procedencia,'Ruta':r.ruta,'No. Económico':r.num_eco,'Fecha Entrada':r.fecha_entrada,'Hora Entrada':r.hora_entrada,'Peso Bruto kg':r.peso_bruto,'Tara kg':r.tara,'Peso Neto kg':r.peso_neto,'Fecha Salida':r.fecha_salida,'Hora Salida':r.hora_salida,'Observaciones':r.observaciones,'Capturista':r.capturista,'Registrado':r.created_at}),
   };
@@ -5576,7 +5936,7 @@ async function exportarExcelModulo(modulo, etiqueta, nombre, data, periodo) {
   wsR['!cols'] = [{ wch: 40 }];
   XLSX.utils.book_append_sheet(wb, wsR, 'Info');
   const fecha = new Date().toISOString().slice(0, 10);
-  XLSX.writeFile(wb, `PASA_${nombre}_${fecha}.xlsx`);
+  XLSX.writeFile(wb, `CEA_${nombre}_${fecha}.xlsx`);
 }
 
 async function exportarPDFModulo(modulo, etiqueta, nombre, data, periodo) {
@@ -5643,7 +6003,7 @@ async function exportarPDFModulo(modulo, etiqueta, nombre, data, periodo) {
     doc.text(`${etiqueta}  ·  ${periodo}  ·  DGSPM Torreón`, ML, PH - 5);
     doc.text(`Página ${p} de ${tp}`, PW - MR, PH - 5, { align: 'right' });
   }
-  doc.save(`PASA_${nombre}_${new Date().toISOString().slice(0, 10)}.pdf`);
+  doc.save(`CEA_${nombre}_${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
 // Alias legacy
@@ -6150,7 +6510,7 @@ async function renderRolTolvas() {
     const { data: diarioHoy } = await api('GET', `/diario?fechaIni=${hoy}&fechaFin=${hoy}&limit=200`);
     const registrados = new Set(
       diarioHoy
-        .filter(r => r.servicio === 'Tolvas y Contenedores' && r.punto_tolva)
+        .filter(r => (r.servicio === 'Contenedores' || r.servicio === 'Tolvas') && r.punto_tolva)
         .map(r => r.punto_tolva)
     );
 
@@ -6229,7 +6589,7 @@ function confirmarSelectorLlamada() {
   api('GET', `/diario?fechaIni=${hoy}&fechaFin=${hoy}&limit=200`)
     .then(({ data }) => {
       const registrados = new Set(
-        data.filter(r => r.servicio === 'Tolvas y Contenedores' && r.punto_tolva)
+        data.filter(r => (r.servicio === 'Contenedores' || r.servicio === 'Tolvas') && r.punto_tolva)
             .map(r => r.punto_tolva)
       );
       renderTablaRol('rol-tolvas-tabla-llamada', _rolLlamadasHoy, registrados);
@@ -6267,14 +6627,15 @@ async function guardarRegistroTolva() {
   showLoader('Guardando registro…');
   try {
     const hoy = new Date().toISOString().slice(0, 10);
-    const { folio } = await api('GET', '/diario/siguiente-folio?servicio=Tolvas%20y%20Contenedores');
+    const _svcTolva = tolvaRow.tipo === 'ROLL-OFF' ? 'Tolvas' : 'Contenedores';
+    const { folio } = await api('GET', `/diario/siguiente-folio?servicio=${encodeURIComponent(_svcTolva)}`);
 
     const fd = new FormData();
     fd.append('folio',         folio);
     fd.append('fecha',         hoy);
     fd.append('hora',          document.getElementById('rtv-hora').value);
     fd.append('responsable',   document.getElementById('rtv-responsable').value);
-    fd.append('servicio',      'Tolvas y Contenedores');
+    fd.append('servicio',      _svcTolva);
     fd.append('punto_tolva',   tolvaRow.punto_servicio);
     fd.append('unidad',        'N/A');
     fd.append('colonia',       tolvaRow.ubicacion || tolvaRow.punto_servicio);
@@ -6292,7 +6653,7 @@ async function guardarRegistroTolva() {
     cerrarModal('modal-registro-tolva');
     flash(`Registro ${created.folio} guardado ✔`);
 
-    // Generar PDF y subir a Drive (mismo flujo que guardarDiario)
+    // Generar PDF y descargar localmente
     const img1 = created.foto1 ? `/uploads/${created.foto1}` : '';
     const img2 = created.foto2 ? `/uploads/${created.foto2}` : '';
     await buildDiarioPDF({
@@ -6469,7 +6830,7 @@ async function generarReporteEjecutivo() {
     doc.text('REPORTE EJECUTIVO', PW/2, 98, { align:'center' });
     doc.setFontSize(16);
     doc.setTextColor(240,165,0);
-    doc.text('SUPERVISIÓN PASA', PW/2, 110, { align:'center' });
+    doc.text('SUPERVISIÓN CEA', PW/2, 110, { align:'center' });
 
     doc.setDrawColor(240,165,0);
     doc.setLineWidth(0.5);
@@ -6483,7 +6844,7 @@ async function generarReporteEjecutivo() {
     doc.setFontSize(9);
     doc.setTextColor(120,120,130);
     doc.text(`Generado: ${new Date().toLocaleString('es-MX')}`, PW/2, 160, { align:'center' });
-    doc.text('Sistema Integral PASA · DGSPM Torreón', PW/2, 168, { align:'center' });
+    doc.text('Sistema Integral CEA · DGSPM Torreón', PW/2, 168, { align:'center' });
 
     // Espacio reservado para logo
     doc.setDrawColor(60,60,70);
@@ -6615,7 +6976,7 @@ async function generarReporteEjecutivo() {
       }
     }
 
-    doc.save(`Reporte_Ejecutivo_PASA_${periodo}.pdf`);
+    doc.save(`Reporte_Ejecutivo_CEA_${periodo}.pdf`);
     flash('Reporte ejecutivo generado ✔');
   } catch(e) { alert('Error al generar reporte: ' + e.message); }
   hideLoader();
@@ -6711,7 +7072,651 @@ async function verResumenLN() {
   } catch(e) { flash('Error al cargar reporte'); }
 }
 
+/* ═══ ÓRDENES DE TRABAJO ════════════════════════════════════════ */
+let _otEditId = null;
+let _otAtenderId = null;
+
+const OT_PRIORIDAD_COLOR = {
+  URGENTE: 'var(--red)',
+  ALTA:    'var(--orange,#f97316)',
+  NORMAL:  'var(--accent)',
+  BAJA:    'var(--muted)',
+};
+const OT_ESTADO_COLOR = {
+  PENDIENTE:  '#f97316',
+  EN_PROCESO: '#3b82f6',
+  ATENDIDA:   '#22c55e',
+  CANCELADA:  'var(--muted)',
+};
+
+async function renderOrdenes() {
+  const q         = document.getElementById('ot-q')?.value         || '';
+  const estado    = document.getElementById('ot-estado')?.value    || '';
+  const prioridad = document.getElementById('ot-prioridad')?.value || '';
+  const tipo      = document.getElementById('ot-tipo')?.value      || '';
+  const params    = new URLSearchParams({ q, estado, prioridad, tipo, limit: 200 });
+  try {
+    const res  = await api('GET', `/ordenes?${params}`);
+    const rows = res.data || [];
+
+    // Badge en nav
+    const pendientes = rows.filter(r => r.estado === 'PENDIENTE' || r.estado === 'EN_PROCESO').length;
+    const nbOt = document.getElementById('nb-ordenes');
+    if (nbOt) { nbOt.textContent = pendientes || ''; nbOt.style.display = pendientes ? '' : 'none'; }
+
+    const tbody = document.getElementById('ot-tbody');
+    if (!tbody) return;
+    if (rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:28px;">Sin órdenes registradas</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = rows.map(r => {
+      const pColor = OT_PRIORIDAD_COLOR[r.prioridad] || 'var(--muted)';
+      const eColor = OT_ESTADO_COLOR[r.estado]       || 'var(--muted)';
+      const ligado = [r.folio_diario ? `<span style="font-size:10px;font-family:var(--font-mono);background:var(--bg);border:1px solid var(--border);padding:1px 5px;border-radius:4px;">D: ${r.folio_diario}</span>` : '',
+                      r.folio_auditoria ? `<span style="font-size:10px;font-family:var(--font-mono);background:var(--bg);border:1px solid var(--border);padding:1px 5px;border-radius:4px;">S: ${r.folio_auditoria}</span>` : ''].filter(Boolean).join(' ');
+      const acciones = r.estado === 'PENDIENTE'
+        ? `<button class="btn btn-sm btn-outline" onclick="iniciarOrden(${r.id})" title="Iniciar"><i class="fas fa-play"></i></button>
+           <button class="btn btn-sm btn-outline" onclick="abrirEditarOrden(${r.id})" title="Editar"><i class="fas fa-edit"></i></button>
+           <button class="btn btn-sm btn-outline" onclick="cancelarOrden(${r.id})" title="Cancelar"><i class="fas fa-times"></i></button>`
+        : r.estado === 'EN_PROCESO'
+        ? `<span style="font-size:11px;color:var(--muted);font-style:italic;">Se cierra desde<br>Diario de Actividades</span>
+           <button class="btn btn-sm btn-outline" onclick="cancelarOrden(${r.id})" title="Cancelar" style="margin-left:4px;"><i class="fas fa-times"></i></button>`
+        : `<button class="btn btn-sm btn-outline" onclick="imprimirOrden(${r.id})" title="Imprimir"><i class="fas fa-print"></i></button>`;
+      return `<tr>
+        <td><strong style="font-family:var(--font-mono);font-size:12px;">${r.folio}</strong></td>
+        <td>${r.fecha || '—'}</td>
+        <td>${r.dirigida_a || '—'}</td>
+        <td><span style="font-size:11px;">${r.tipo || '—'}</span></td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(r.descripcion||'').replace(/"/g,'&quot;')}">${r.descripcion || '—'}</td>
+        <td><span style="font-weight:700;color:${pColor};font-size:11px;">${r.prioridad}</span></td>
+        <td><span style="font-size:11px;font-weight:600;color:${eColor};">${r.estado.replace('_',' ')}</span></td>
+        <td>${r.fecha_limite || '—'}</td>
+        <td style="white-space:nowrap;">${ligado || '—'}</td>
+        <td style="text-align:center;white-space:nowrap;">${acciones}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('ot-pagination').textContent = `${rows.length} orden${rows.length!==1?'es':''} encontrada${rows.length!==1?'s':''}`;
+  } catch(e) { console.error('Error cargando órdenes:', e); }
+}
+
+async function abrirNuevaOrden() {
+  _otEditId = null;
+  document.getElementById('modal-ot-title').innerHTML = '<i class="fas fa-clipboard-list"></i> Nueva Orden de Trabajo';
+  document.getElementById('btn-del-ot').style.display = 'none';
+  // Folio automático
+  try {
+    const { folio } = await api('GET', '/ordenes/siguiente-folio');
+    document.getElementById('ot-folio').value = folio;
+  } catch(_) { document.getElementById('ot-folio').value = '—'; }
+  document.getElementById('ot-fecha').value          = new Date().toLocaleDateString('en-CA');
+  document.getElementById('ot-dirigida-a').value     = '';
+  document.getElementById('ot-tipo-sel').value       = '';
+  document.getElementById('ot-prioridad-sel').value  = 'NORMAL';
+  document.getElementById('ot-limite').value         = '';
+  document.getElementById('ot-zona').value           = '';
+  document.getElementById('ot-colonia').value        = '';
+  document.getElementById('ot-descripcion').value    = '';
+  document.getElementById('ot-emitida-por').value    = document.getElementById('tb-nombre')?.textContent || '';
+  document.getElementById('modal-ot').classList.add('open');
+}
+
+async function abrirEditarOrden(id) {
+  _otEditId = id;
+  try {
+    const r = await api('GET', `/ordenes/${id}`);
+    document.getElementById('modal-ot-title').innerHTML = '<i class="fas fa-edit"></i> Editar Orden de Trabajo';
+    document.getElementById('btn-del-ot').style.display = '';
+    document.getElementById('ot-folio').value          = r.folio;
+    document.getElementById('ot-fecha').value          = r.fecha        || '';
+    document.getElementById('ot-dirigida-a').value     = r.dirigida_a   || '';
+    document.getElementById('ot-tipo-sel').value       = r.tipo         || '';
+    document.getElementById('ot-prioridad-sel').value  = r.prioridad    || 'NORMAL';
+    document.getElementById('ot-limite').value         = r.fecha_limite || '';
+    document.getElementById('ot-zona').value           = r.zona         || '';
+    document.getElementById('ot-colonia').value        = r.colonia      || '';
+    document.getElementById('ot-descripcion').value    = r.descripcion  || '';
+    document.getElementById('ot-emitida-por').value    = r.emitida_por  || '';
+    document.getElementById('modal-ot').classList.add('open');
+  } catch(e) { flash('Error al cargar la orden'); }
+}
+
+async function guardarOrden() {
+  const body = {
+    folio:       document.getElementById('ot-folio').value,
+    fecha:       document.getElementById('ot-fecha').value,
+    dirigida_a:  document.getElementById('ot-dirigida-a').value.trim(),
+    tipo:        document.getElementById('ot-tipo-sel').value,
+    prioridad:   document.getElementById('ot-prioridad-sel').value,
+    fecha_limite:document.getElementById('ot-limite').value      || null,
+    zona:        document.getElementById('ot-zona').value.trim() || null,
+    colonia:     document.getElementById('ot-colonia').value.trim() || null,
+    descripcion: document.getElementById('ot-descripcion').value.trim(),
+    emitida_por: document.getElementById('ot-emitida-por').value.trim() || null,
+  };
+  if (!body.dirigida_a || !body.tipo || !body.descripcion) {
+    flash('Supervisor, tipo y descripción son obligatorios'); return;
+  }
+  try {
+    if (_otEditId) await api('PUT', `/ordenes/${_otEditId}`, body);
+    else           await api('POST', '/ordenes', body);
+    cerrarModal('modal-ot');
+    flash(_otEditId ? 'Orden actualizada' : 'Orden creada');
+    renderOrdenes();
+  } catch(e) { flash('Error: ' + e.message); }
+}
+
+async function eliminarOrden() {
+  if (!_otEditId || !confirm('¿Eliminar esta orden?')) return;
+  try {
+    await api('DELETE', `/ordenes/${_otEditId}`);
+    cerrarModal('modal-ot');
+    flash('Orden eliminada');
+    renderOrdenes();
+  } catch(e) { flash('Error: ' + e.message); }
+}
+
+async function iniciarOrden(id) {
+  try {
+    await api('PATCH', `/ordenes/${id}/iniciar`);
+    flash('Orden en proceso');
+    renderOrdenes();
+  } catch(e) { flash('Error: ' + e.message); }
+}
+
+function abrirAtenderOrden(id) {
+  _otAtenderId = id;
+  document.getElementById('ot-link-diario').value    = '';
+  document.getElementById('ot-link-auditoria').value = '';
+  document.getElementById('ot-obs-cierre').value     = '';
+  document.getElementById('modal-ot-atender').classList.add('open');
+}
+
+async function confirmarAtenderOrden() {
+  if (!_otAtenderId) return;
+  const body = {
+    folio_diario:        document.getElementById('ot-link-diario').value.trim()    || '',
+    folio_auditoria:     document.getElementById('ot-link-auditoria').value.trim() || '',
+    observaciones_cierre:document.getElementById('ot-obs-cierre').value.trim()     || '',
+  };
+  try {
+    await api('PATCH', `/ordenes/${_otAtenderId}/atender`, body);
+    cerrarModal('modal-ot-atender');
+    flash('Orden marcada como atendida');
+    renderOrdenes();
+  } catch(e) { flash('Error: ' + e.message); }
+}
+
+async function cancelarOrden(id) {
+  const obs = prompt('Motivo de cancelación (opcional):');
+  if (obs === null) return; // usuario canceló el prompt
+  try {
+    await api('PATCH', `/ordenes/${id}/cancelar`, { observaciones_cierre: obs });
+    flash('Orden cancelada');
+    renderOrdenes();
+  } catch(e) { flash('Error: ' + e.message); }
+}
+
+async function imprimirOrden(id) {
+  try {
+    const r = await api('GET', `/ordenes/${id}`);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'letter' });
+    const ML=18, PW=215.9;
+
+    // Encabezado
+    doc.setFillColor(220,100,20);
+    doc.rect(0,0,PW,22,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(255,255,255);
+    doc.text('ORDEN DE TRABAJO — CEA', ML, 10);
+    doc.setFontSize(8); doc.setFont('helvetica','normal');
+    doc.text('R. Ayuntamiento de Torreón · Dirección de Servicios Públicos Municipales', ML, 16);
+    doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(255,255,255);
+    doc.text(r.folio, PW-ML, 13, {align:'right'});
+
+    // Datos principales
+    doc.setTextColor(40,40,40); doc.setFontSize(9); doc.setFont('helvetica','normal');
+    let y = 32;
+    const field = (lbl, val, x=ML, w=88) => {
+      doc.setFont('helvetica','bold'); doc.text(lbl+':', x, y);
+      doc.setFont('helvetica','normal'); doc.text(String(val||'—'), x+w*0.38, y);
+    };
+    field('Fecha de emisión', r.fecha);               field('Prioridad', r.prioridad, ML+95);
+    y+=8;
+    field('Dirigida a', r.dirigida_a);                field('Tipo', r.tipo, ML+95);
+    y+=8;
+    field('Emitida por', r.emitida_por);              field('Fecha límite', r.fecha_limite||'—', ML+95);
+    y+=8;
+    if (r.zona || r.colonia) { field('Zona / Colonia', [r.zona,r.colonia].filter(Boolean).join(' · ')); y+=8; }
+
+    // Descripción
+    y+=4;
+    doc.setFillColor(248,244,240); doc.roundedRect(ML, y, PW-ML*2, 42, 2, 2, 'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(180,80,10);
+    doc.text('INSTRUCCIONES / DESCRIPCIÓN', ML+4, y+6);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(40,40,40);
+    const lines = doc.splitTextToSize(r.descripcion||'—', PW-ML*2-8);
+    doc.text(lines, ML+4, y+13);
+    y += 52;
+
+    // Cierre si está atendida
+    if (r.estado === 'ATENDIDA') {
+      doc.setFillColor(240,250,244); doc.roundedRect(ML, y, PW-ML*2, 30, 2, 2, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(22,163,74);
+      doc.text('CIERRE DE ORDEN', ML+4, y+6);
+      doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40);
+      doc.text(`Fecha atención: ${r.fecha_atencion||'—'}`, ML+4, y+13);
+      if (r.folio_diario)    doc.text(`Folio Diario: ${r.folio_diario}`, ML+4, y+19);
+      if (r.folio_auditoria) doc.text(`Folio Supervisión: ${r.folio_auditoria}`, ML+4, y+25);
+      const obsLines = doc.splitTextToSize(r.observaciones_cierre||'', PW-ML*2-8);
+      if (obsLines.length) { doc.text(obsLines, ML+80, y+13); }
+      y += 38;
+    }
+
+    // Estado badge
+    y += 6;
+    const estadoColors = { PENDIENTE:[249,115,22], EN_PROCESO:[59,130,246], ATENDIDA:[34,197,94], CANCELADA:[150,150,150] };
+    const sc = estadoColors[r.estado] || [150,150,150];
+    doc.setFillColor(...sc); doc.roundedRect(ML, y, 50, 8, 2, 2, 'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(255,255,255);
+    doc.text(r.estado.replace('_',' '), ML+25, y+5.5, {align:'center'});
+
+    // Firmas
+    const FY = 245;
+    doc.setDrawColor(180,180,180); doc.setLineWidth(0.3);
+    [[ML+20, 'SUPERVISOR CEA'],[PW/2, 'COORDINADOR'],[PW-ML-20,'DIRECTOR']].forEach(([cx,lbl])=>{
+      doc.line(cx-28, FY, cx+28, FY);
+      doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(100,100,100);
+      doc.text(lbl, cx, FY+4, {align:'center'});
+    });
+
+    // Pie
+    doc.setFontSize(6.5); doc.setTextColor(160,160,160); doc.setFont('helvetica','normal');
+    doc.text(`Generado: ${new Date().toLocaleString('es-MX')} · Sistema CEA · DGSPM Torreón`, PW/2, 272, {align:'center'});
+
+    doc.save(`OT-${r.folio.replace(/\//g,'-')}.pdf`);
+  } catch(e) { flash('Error al generar PDF: ' + e.message); console.error(e); }
+}
+
+/* ═══ COMPROBACIÓN PDF ══════════════════════════════════════════ */
+function abrirComprobacion(){
+  const hoy = new Date();
+  const y   = hoy.getFullYear();
+  const m   = String(hoy.getMonth()+1).padStart(2,'0');
+  document.getElementById('comp-ini').value = `${y}-${m}-01`;
+  const lastDay = new Date(y, hoy.getMonth()+1, 0).getDate();
+  document.getElementById('comp-fin').value = `${y}-${m}-${String(lastDay).padStart(2,'0')}`;
+  document.getElementById('modal-comprobacion').classList.add('open');
+}
+
+function loadImgB64(url){
+  return new Promise((resolve)=>{
+    fetch(url)
+      .then(r=>{ if(!r.ok) throw new Error('no img'); return r.blob(); })
+      .then(blob=>{
+        const reader = new FileReader();
+        reader.onload = ()=> resolve(reader.result);
+        reader.onerror = ()=> resolve(null);
+        reader.readAsDataURL(blob);
+      })
+      .catch(()=> resolve(null));
+  });
+}
+
+async function imprimirComprobacion(){
+  const ini = document.getElementById('comp-ini').value;
+  const fin = document.getElementById('comp-fin').value;
+  if(!ini||!fin){ flash('Selecciona el rango de fechas'); return; }
+
+  const btn = document.querySelector('#modal-comprobacion .btn-accent');
+  btn.disabled=true; btn.textContent='Generando…';
+
+  try {
+    const [boletasRes, diarioRes, auditRes, logoDgspm, logoTorreon] = await Promise.all([
+      api('GET', `/boletas?fechaIni=${ini}&fechaFin=${fin}&limit=9999`),
+      api('GET', `/diario?fechaIni=${ini}&fechaFin=${fin}&limit=9999`),
+      api('GET', `/auditorias?fechaIni=${ini}&fechaFin=${fin}&limit=9999`),
+      loadImgB64('/logos/logo-dgspm.png'),
+      loadImgB64('/logos/logo-torreon.png'),
+    ]);
+
+    const boletas    = Array.isArray(boletasRes)  ? boletasRes  : (boletasRes.data  || []);
+    const diario     = Array.isArray(diarioRes)   ? diarioRes   : (diarioRes.data   || []);
+    const auditorias = Array.isArray(auditRes)    ? auditRes    : (auditRes.data    || []);
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'letter' });
+
+    const ML=12, MR=12, PW=215.9, PH=279.4;
+    const UW=PW-ML-MR;   // 191.9
+    const HDR_H=42;
+    const FTR_Y=PH-32;
+
+    const fmtFecha = s => s ? s.slice(0,10) : '—';
+    const trunc = (s,n) => s ? (String(s).length>n ? String(s).slice(0,n-1)+'…' : String(s)) : '—';
+
+    function drawHeader(pageNum){
+      // Left logo (DGSPM)
+      if(logoDgspm) doc.addImage(logoDgspm,'PNG',ML,4,30,28);
+      // Right logo (Torreón)
+      if(logoTorreon) doc.addImage(logoTorreon,'PNG',PW-MR-44,4,44,28);
+
+      // Center title block
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(11);
+      doc.setTextColor(220,100,20);
+      doc.text('R. Ayuntamiento de Torreón', PW/2, 12, {align:'center'});
+      doc.setFontSize(9);
+      doc.setTextColor(60,60,60);
+      doc.text('Dirección de Servicios Públicos Municipales', PW/2, 17, {align:'center'});
+      doc.setFontSize(10);
+      doc.setFont('helvetica','bold');
+      doc.text('CONSORCIO ECOURBANO AMBIENTAL (CEA)', PW/2, 23, {align:'center'});
+      doc.setFontSize(9);
+      doc.setFont('helvetica','normal');
+      const rango = `Período: ${ini} al ${fin}`;
+      doc.text(rango, PW/2, 28, {align:'center'});
+      doc.setFontSize(8);
+      doc.setTextColor(120,120,120);
+      doc.text(`Comprobación de Operaciones — Página ${pageNum}`, PW/2, 33, {align:'center'});
+
+      // Header rule
+      doc.setDrawColor(220,100,20);
+      doc.setLineWidth(0.8);
+      doc.line(ML, HDR_H-1, PW-MR, HDR_H-1);
+    }
+
+    function drawFooter(){
+      doc.setDrawColor(180,180,180);
+      doc.setLineWidth(0.3);
+      doc.line(ML, FTR_Y, PW-MR, FTR_Y);
+
+      const col1=ML+10, col2=PW/2, col3=PW-MR-44;
+      const y1=FTR_Y+7, y2=FTR_Y+13, y3=FTR_Y+18, y4=FTR_Y+22;
+
+      // Signature lines
+      doc.setDrawColor(100,100,100); doc.setLineWidth(0.2);
+      [[col1,50],[col2,50],[col3,50]].forEach(([cx,w])=>{
+        doc.line(cx-w/2, y2, cx+w/2, y2);
+      });
+
+      doc.setFont('helvetica','bold'); doc.setFontSize(7.5); doc.setTextColor(50,50,50);
+      doc.text('ELABORÓ', col1, y1, {align:'center'});
+      doc.text('REVISÓ', col2, y1, {align:'center'});
+      doc.text('AUTORIZÓ', col3, y1, {align:'center'});
+
+      doc.setFont('helvetica','normal'); doc.setFontSize(7);
+      doc.text('Luis Roberto Viveros Muñoz', col1, y3, {align:'center'});
+      doc.text('Supervisor de Limpieza', col1, y4, {align:'center'});
+
+      doc.text('Erick Esteban Lozano Hernández', col2, y3, {align:'center'});
+      doc.text('Coordinador Administrativo', col2, y4, {align:'center'});
+
+      doc.text('Ing. Demetrio Zuñiga Sordo', col3, y3, {align:'center'});
+      doc.text('Director de Limpieza', col3, y4, {align:'center'});
+    }
+
+    let page=1;
+    drawHeader(page);
+    drawFooter();
+    let y = HDR_H+4;
+
+    function checkBreak(needed=8){
+      if(y + needed > FTR_Y - 2){
+        doc.addPage();
+        page++;
+        drawHeader(page);
+        drawFooter();
+        y = HDR_H+4;
+      }
+    }
+
+    function drawTableSection(title, cols, rows, rowFn){
+      // Section title
+      checkBreak(14);
+      doc.setFillColor(220,100,20);
+      doc.roundedRect(ML, y, UW, 7, 1, 1, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(255,255,255);
+      doc.text(title, ML+3, y+4.8);
+      y+=9;
+
+      // Column headers
+      checkBreak(7);
+      doc.setFillColor(245,245,245);
+      doc.rect(ML, y, UW, 6, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(6.5); doc.setTextColor(60,60,60);
+      let cx=ML;
+      cols.forEach(c=>{
+        doc.text(c.h, cx+1, y+4.2);
+        cx+=c.w;
+      });
+      y+=6;
+      doc.setDrawColor(200,200,200); doc.setLineWidth(0.2);
+      doc.line(ML, y, PW-MR, y);
+
+      if(rows.length===0){
+        checkBreak(8);
+        doc.setFont('helvetica','italic'); doc.setFontSize(7); doc.setTextColor(150,150,150);
+        doc.text('Sin registros en el período seleccionado.', ML+3, y+5);
+        y+=9;
+        return;
+      }
+
+      rows.forEach((row,i)=>{
+        checkBreak(6);
+        if(i%2===0){ doc.setFillColor(253,248,244); doc.rect(ML,y,UW,5.5,'F'); }
+        doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(40,40,40);
+        cx=ML;
+        const cells = rowFn(row);
+        cells.forEach((txt,j)=>{
+          doc.text(trunc(txt, Math.floor(cols[j].w/1.7)), cx+1, y+3.8);
+          cx+=cols[j].w;
+        });
+        y+=5.5;
+        doc.setDrawColor(230,230,230); doc.setLineWidth(0.1);
+        doc.line(ML, y, PW-MR, y);
+      });
+      y+=6;
+    }
+
+    // ── SECCIÓN 1: BÁSCULA ───────────────────────────────────────
+    drawTableSection('BÁSCULA / BOLETAS DE PESAJE',
+      [
+        {h:'Folio',       w:28},
+        {h:'Tipo Servicio',w:42},
+        {h:'Económico',   w:22},
+        {h:'Fecha',       w:22},
+        {h:'Bruto (t)',   w:25},
+        {h:'Tara (t)',    w:23},
+        {h:'Neto (t)',    w:UW-162},
+      ],
+      boletas,
+      r=>[r.folio||'—', r.tipo_servicio||'—', r.num_economico||'—',
+          fmtFecha(r.fecha_entrada||r.fecha), r.peso_bruto!=null?r.peso_bruto:'—',
+          r.tara!=null?r.tara:'—', r.peso_neto!=null?r.peso_neto:'—']
+    );
+
+    // ── SECCIÓN 2: DIARIO DE ACTIVIDADES ────────────────────────
+    drawTableSection('DIARIO DE ACTIVIDADES',
+      [
+        {h:'Folio',      w:24},
+        {h:'Fecha',      w:20},
+        {h:'Hora',       w:14},
+        {h:'Responsable',w:42},
+        {h:'Servicio',   w:34},
+        {h:'Unidad',     w:22},
+        {h:'Colonia',    w:UW-156},
+      ],
+      diario,
+      r=>[r.folio||'—', fmtFecha(r.fecha), r.hora||'—',
+          r.responsable||'—', r.tipo_servicio||r.servicio||'—',
+          r.num_economico||r.unidad||'—', r.colonia||r.ubicacion||'—']
+    );
+
+    // ── SECCIÓN 3: SUPERVISIÓN (AUDITORÍAS) ─────────────────────
+    drawTableSection('SUPERVISIÓN DE OPERACIONES',
+      [
+        {h:'Folio',    w:26},
+        {h:'Fecha',    w:20},
+        {h:'Auditor',  w:48},
+        {h:'Tipo',     w:36},
+        {h:'Score',    w:18},
+        {h:'Veredicto',w:26},
+        {h:'Zona',     w:UW-174},
+      ],
+      auditorias,
+      r=>[r.folio||'—', fmtFecha(r.fecha), r.auditor||'—',
+          r.tipo||'—', r.score!=null?r.score+'%':'—',
+          r.veredicto||'—', r.zona||'—']
+    );
+
+    doc.save(`comprobacion-cea-${ini}-${fin}.pdf`);
+    cerrarModal('modal-comprobacion');
+    flash('PDF generado correctamente');
+  } catch(e){
+    console.error(e);
+    flash('Error al generar PDF: '+e.message);
+  } finally {
+    btn.disabled=false; btn.innerHTML='<i class="fas fa-file-pdf"></i> Generar PDF';
+  }
+}
+
 </script>
+
+<!-- ═══ MODAL ORDEN DE TRABAJO ═══ -->
+<div class="modal-overlay" id="modal-ot">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-hdr">
+      <h3 id="modal-ot-title"><i class="fas fa-clipboard-list"></i> Nueva Orden de Trabajo</h3>
+      <button class="m-close" onclick="cerrarModal('modal-ot')">✕</button>
+    </div>
+    <div style="padding:18px 22px 4px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Folio</label>
+        <input class="form-control" id="ot-folio" readonly style="font-family:var(--font-mono);font-weight:700;background:var(--bg-card);">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Fecha</label>
+        <input type="date" class="form-control" id="ot-fecha">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Dirigida a *</label>
+        <input class="form-control" id="ot-dirigida-a" placeholder="Nombre del supervisor CEA" list="ot-supervisores-list">
+        <datalist id="ot-supervisores-list">
+          <option value="Carlos González">
+          <option value="Heber Portillo">
+          <option value="Said Cuevas">
+          <option value="Jesus Sena">
+          <option value="Homero Elizalde">
+          <option value="Jorge Sanchez">
+          <option value="Roberto Alvarado">
+        </datalist>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Tipo de orden *</label>
+        <select class="form-control" id="ot-tipo-sel">
+          <option value="">Seleccionar…</option>
+          <option value="RECOLECCIÓN">RECOLECCIÓN</option>
+          <option value="BARRIDO">BARRIDO</option>
+          <option value="TOLVA">TOLVA</option>
+          <option value="SUPERVISIÓN">SUPERVISIÓN</option>
+          <option value="CORRECTIVA">CORRECTIVA</option>
+          <option value="OTRA">OTRA</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Prioridad</label>
+        <select class="form-control" id="ot-prioridad-sel">
+          <option value="NORMAL">NORMAL</option>
+          <option value="ALTA">ALTA</option>
+          <option value="URGENTE">URGENTE</option>
+          <option value="BAJA">BAJA</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Fecha límite</label>
+        <input type="date" class="form-control" id="ot-limite">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Zona</label>
+        <input class="form-control" id="ot-zona" placeholder="Zona / sector">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Colonia</label>
+        <input class="form-control" id="ot-colonia" placeholder="Colonia o punto de referencia" list="lista-colonias">
+      </div>
+      <div style="grid-column:span 2;">
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Descripción / Instrucciones *</label>
+        <textarea class="form-control" id="ot-descripcion" rows="4" placeholder="Detalle de la orden de trabajo…"></textarea>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Emitida por</label>
+        <input class="form-control" id="ot-emitida-por" placeholder="Nombre de quien emite">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" id="btn-del-ot" style="display:none;margin-right:auto;" onclick="eliminarOrden()"><i class="fas fa-trash"></i> Eliminar</button>
+      <button class="btn btn-outline" onclick="cerrarModal('modal-ot')">Cancelar</button>
+      <button class="btn btn-accent" onclick="guardarOrden()"><i class="fas fa-save"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL ATENDER ORDEN ═══ -->
+<div class="modal-overlay" id="modal-ot-atender">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-hdr">
+      <h3><i class="fas fa-check-circle"></i> Atender Orden</h3>
+      <button class="m-close" onclick="cerrarModal('modal-ot-atender')">✕</button>
+    </div>
+    <div style="padding:18px 22px 8px;display:grid;gap:12px;">
+      <p style="font-size:13px;color:var(--muted);">Liga esta orden a los registros generados para documentar su atención.</p>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Folio Diario de Actividades <span style="font-size:11px;">(opcional)</span></label>
+        <input class="form-control" id="ot-link-diario" placeholder="Ej. DLM/CAR/0024" style="font-family:var(--font-mono);">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Folio Supervisión <span style="font-size:11px;">(opcional)</span></label>
+        <input class="form-control" id="ot-link-auditoria" placeholder="Ej. SUP-20260410-001" style="font-family:var(--font-mono);">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Observaciones de cierre</label>
+        <textarea class="form-control" id="ot-obs-cierre" rows="3" placeholder="Descripción de cómo se atendió la orden…"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-ot-atender')">Cancelar</button>
+      <button class="btn btn-accent" onclick="confirmarAtenderOrden()"><i class="fas fa-check"></i> Confirmar Atención</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Comprobación -->
+<div class="modal-overlay" id="modal-comprobacion">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-hdr">
+      <h3><i class="fas fa-print"></i> Imprimir Comprobación</h3>
+      <button class="m-close" onclick="cerrarModal('modal-comprobacion')">✕</button>
+    </div>
+    <div style="padding:18px 22px 8px;">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Selecciona el período para incluir en el reporte de <strong>Báscula</strong>, <strong>Diario</strong> y <strong>Supervisión</strong>.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+        <div>
+          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Fecha inicio</label>
+          <input type="date" id="comp-ini" class="form-control">
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Fecha fin</label>
+          <input type="date" id="comp-fin" class="form-control">
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-comprobacion')">Cancelar</button>
+      <button class="btn btn-accent" onclick="imprimirComprobacion()"><i class="fas fa-file-pdf"></i> Generar PDF</button>
+    </div>
+  </div>
+</div>
 
 <!-- Modal Lista Negra -->
 <div class="modal-overlay" id="modal-ln">
@@ -6728,7 +7733,7 @@ async function verResumenLN() {
       </div>
       <div>
         <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block;">Colonia *</label>
-        <input class="form-control" id="ln-colonia" placeholder="Nombre de la colonia">
+        <input class="form-control" id="ln-colonia" placeholder="Nombre de la colonia" list="lista-colonias">
       </div>
       <div>
         <label style="font-size:12px;color:var(--muted);margin-bottom:4px;display:block;">Unidad</label>

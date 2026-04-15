@@ -1,5 +1,5 @@
 /**
- * routes/auth.js — Autenticación PASA
+ * routes/auth.js — Autenticación CEA
  * POST /api/auth/login   → { token, nombre, rol }
  * POST /api/auth/logout  → { ok: true }
  * GET  /api/auth/me      → { id, usuario, nombre, rol }

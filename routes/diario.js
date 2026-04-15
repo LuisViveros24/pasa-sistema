@@ -4,8 +4,9 @@ const path    = require('path');
 const multer  = require('multer');
 const db      = require('../db/database');
 
+const { UPLOADS_DIR } = require('../paths');
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, '..', 'uploads')),
+  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
   filename:    (req, file, cb) => cb(null, `diario_${Date.now()}_${file.fieldname}${path.extname(file.originalname)}`)
 });
 const upload = multer({ storage, limits: { fileSize: 15*1024*1024 } });
@@ -37,7 +38,8 @@ router.get('/siguiente-folio', async (req, res) => {
   try {
     const { servicio = '' } = req.query;
     const prefixMap = {
-      'Tolvas y Contenedores': 'TOL',
+      'Tolvas':                'TOL',
+      'Contenedores':          'CON',
       'Barrido Manual':        'BM',
       'Barrido Selectivo':     'BS',
       'Barrido Mecánico':      'BMEC',
@@ -69,23 +71,76 @@ router.post('/', upload.fields([{name:'foto1',maxCount:1},{name:'foto2',maxCount
     const foto1 = req.files?.foto1?.[0]?.filename || null;
     const foto2 = req.files?.foto2?.[0]?.filename || null;
     const result = await db.run_p(
-      `INSERT INTO diario (folio,fecha,hora,responsable,servicio,unidad,gps,colonia,calle,numero,actividades,observaciones,foto1,foto2,punto_tolva)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO diario (folio,fecha,hora,responsable,servicio,unidad,gps,colonia,calle,numero,actividades,observaciones,foto1,foto2,punto_tolva,origen_tipo,origen_folio)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [ b.folio, b.fecha||null, b.hora||null, b.responsable||null, b.servicio||null,
         b.unidad||null, b.gps||null, b.colonia||null, b.calle||null, b.numero||null,
-        b.actividades||null, b.observaciones||null, foto1, foto2, b.punto_tolva||null ]
+        b.actividades||null, b.observaciones||null, foto1, foto2, b.punto_tolva||null,
+        b.origen_tipo||null, b.origen_folio||null ]
     );
     const created = await db.get_p('SELECT * FROM diario WHERE id = ?', [result.lastID]);
+
+    // Auto-cerrar Orden de Trabajo si este registro la cumple
+    if (b.origen_tipo === 'orden' && b.origen_folio) {
+      try {
+        const ot = await db.get_p(
+          `SELECT id FROM ordenes_trabajo WHERE folio = ? AND estado != 'ATENDIDA' AND estado != 'CANCELADA'`,
+          [b.origen_folio]
+        );
+        if (ot) {
+          const hoy = new Date().toLocaleDateString('en-CA');
+          await db.run_p(
+            `UPDATE ordenes_trabajo
+             SET estado='ATENDIDA', fecha_atencion=?, folio_diario=?,
+                 observaciones_cierre=COALESCE(observaciones_cierre, ?)
+             WHERE id=?`,
+            [hoy, created.folio, `Atendida mediante Diario ${created.folio}`, ot.id]
+          );
+        }
+      } catch(_) { /* No interrumpir la respuesta si falla el auto-cierre */ }
+    }
+
     res.status(201).json(created);
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-// PATCH /api/diario/:id/auditado
+// PATCH /api/diario/:id/auditado  (alias legacy)
 router.patch('/:id/auditado', async (req, res) => {
   try {
     const r = await db.run_p('UPDATE diario SET auditado=1 WHERE id=?', [req.params.id]);
     if (r.changes === 0) return res.status(404).json({ error: 'No encontrado' });
     res.json({ updated: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// PATCH /api/diario/:id/auditar  (nombre canónico del spec)
+router.patch('/:id/auditar', async (req, res) => {
+  try {
+    const r = await db.run_p('UPDATE diario SET auditado=1 WHERE id=?', [req.params.id]);
+    if (r.changes === 0) return res.status(404).json({ error: 'No encontrado' });
+    res.json({ updated: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /api/diario/export/csv
+router.get('/export/csv', async (req, res) => {
+  try {
+    const { fechaIni='', fechaFin='' } = req.query;
+    let where = 'WHERE 1=1';
+    const params = [];
+    if (fechaIni) { where += ' AND fecha >= ?'; params.push(fechaIni); }
+    if (fechaFin) { where += ' AND fecha <= ?'; params.push(fechaFin); }
+    const rows = await db.all_p(
+      `SELECT folio,fecha,hora,responsable,servicio,unidad,colonia,calle,actividades,observaciones,auditado
+       FROM diario ${where} ORDER BY fecha DESC, id DESC`,
+      params
+    );
+    const headers = ['folio','fecha','hora','responsable','servicio','unidad','colonia','calle','actividades','observaciones','auditado'];
+    const escape  = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
+    const csv     = [headers.join(','), ...rows.map(r => headers.map(h => escape(r[h])).join(','))].join('\r\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="diario-${fechaIni||'todo'}.csv"`);
+    res.send('\uFEFF' + csv); // BOM para Excel
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
