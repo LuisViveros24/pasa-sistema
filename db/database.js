@@ -258,9 +258,6 @@ const SCHEMA = `
   CREATE INDEX IF NOT EXISTS idx_penalidades_folio   ON penalidades(folio);
   CREATE INDEX IF NOT EXISTS idx_penalidades_estado  ON penalidades(estado);
   CREATE INDEX IF NOT EXISTS idx_penalidades_tipo    ON penalidades(tipo);
-  CREATE INDEX IF NOT EXISTS idx_incidencias_folio   ON incidencias(folio);
-  CREATE INDEX IF NOT EXISTS idx_incidencias_fecha   ON incidencias(fecha);
-
   CREATE TABLE IF NOT EXISTS ordenes_trabajo (
     id                   INTEGER PRIMARY KEY AUTOINCREMENT,
     folio                TEXT    NOT NULL,
@@ -304,6 +301,8 @@ const SCHEMA = `
     fotos_json    TEXT DEFAULT '[]',
     created_at    TEXT NOT NULL DEFAULT (datetime('now','localtime'))
   );
+  CREATE INDEX IF NOT EXISTS idx_incidencias_folio   ON incidencias(folio);
+  CREATE INDEX IF NOT EXISTS idx_incidencias_fecha   ON incidencias(fecha);
 `;
 
 // Ejecutar schema y luego seed si actas está vacía
