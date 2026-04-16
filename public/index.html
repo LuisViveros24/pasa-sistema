@@ -353,6 +353,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   .stats-grid{grid-template-columns:1fr 1fr;}
   .form-grid{grid-template-columns:1fr;}
   .fg3,.fg4{grid-template-columns:1fr;}
+  .foto-grid{grid-template-columns:1fr;}
 }
 /* ── LOGIN OVERLAY ── */
 #login-overlay{position:fixed;inset:0;background:#0d1117;display:flex;align-items:center;justify-content:center;z-index:9999;}
@@ -383,8 +384,9 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 .sidebar-overlay.open { display: block; }
 
 @media (max-width: 900px) {
+  /* ── Sidebar drawer ── */
   .sidebar {
-    display: block !important;   /* sobreescribe el display:none anterior */
+    display: block !important;
     position: fixed;
     top: var(--topbar-h, 52px); left: 0;
     height: calc(100vh - var(--topbar-h, 52px));
@@ -395,6 +397,30 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
   }
   .sidebar.open { transform: translateX(0); }
   .hamburger-btn { display: flex !important; }
+
+  /* ── Topbar: ocultar subtítulo y elementos secundarios para que quepan ── */
+  .tb-title span { display: none; }
+  .pill.on { display: none; }
+  #clock { display: none; }
+
+  /* ── Contenido: menos padding lateral ── */
+  .content { padding: 16px 14px; }
+
+  /* ── Modal: menos padding en pantalla chica ── */
+  .modal { padding: 16px; }
+
+  /* ── Tabs de auditoría: que se envuelvan y no se salgan ── */
+  #itab-diario, #itab-reporte, #itab-independiente, #itab-verificacion, #itab-rol-tolvas {
+    min-width: 0 !important;
+    font-size: 11px;
+  }
+
+  /* ── Filtros de tabla: apilados verticalmente ── */
+  .table-filters { flex-direction: column; align-items: stretch; }
+  .table-filters input, .table-filters select {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
 }
 
 .hamburger-btn {
@@ -970,7 +996,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
     <div class="table-header" style="flex-wrap:wrap;gap:8px;">
       <span class="table-title">Registros Anteriores</span>
       <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-left:auto;">
-        <input type="text" id="search-diario" placeholder="Buscar…" oninput="renderDiarioTable()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:11px;color:var(--text);width:150px;">
+        <input type="text" id="search-diario" placeholder="Buscar…" oninput="renderDiarioTable()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:11px;color:var(--text);flex:1;min-width:0;max-width:200px;">
         <input type="date" id="diario-ini" title="Desde" onchange="renderDiarioTable()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:11px;color:var(--text);width:auto;">
         <input type="date" id="diario-fin" title="Hasta" onchange="renderDiarioTable()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;font-size:11px;color:var(--text);width:auto;">
       </div>
@@ -1061,7 +1087,7 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
     <hr style="margin:20px 0;border-color:var(--border);">
     <div class="table-filters">
       <input type="text" id="inc-search" placeholder="Buscar incidencias..."
-             oninput="loadIncidencias()" style="min-width:200px;">
+             oninput="loadIncidencias()" style="flex:1;min-width:0;">
       <input type="date" id="inc-fecha-ini" onchange="loadIncidencias()">
       <input type="date" id="inc-fecha-fin" onchange="loadIncidencias()">
     </div>
