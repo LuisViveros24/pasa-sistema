@@ -144,17 +144,42 @@ router.get('/export/csv', async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-// PUT /api/diario/:id
-router.put('/:id', async (req, res) => {
+// PUT /api/diario/:id  (acepta fotos opcionales vía multipart)
+router.put('/:id', upload.fields([{name:'foto1',maxCount:1},{name:'foto2',maxCount:1}]), async (req, res) => {
+  const fs = require('fs');
   try {
-    const b = req.body;
+    const b   = req.body;
+    const existing = await db.get_p('SELECT foto1,foto2 FROM diario WHERE id=?', [req.params.id]);
+    if (!existing) return res.status(404).json({ error: 'No encontrado' });
+
+    // Resolver foto1
+    let foto1 = existing.foto1;
+    if (req.files?.foto1?.[0]) {
+      if (foto1) { const p = path.join(UPLOADS_DIR, foto1); if (fs.existsSync(p)) fs.unlinkSync(p); }
+      foto1 = req.files.foto1[0].filename;
+    } else if (b.removePhoto1 === '1') {
+      if (foto1) { const p = path.join(UPLOADS_DIR, foto1); if (fs.existsSync(p)) fs.unlinkSync(p); }
+      foto1 = null;
+    }
+
+    // Resolver foto2
+    let foto2 = existing.foto2;
+    if (req.files?.foto2?.[0]) {
+      if (foto2) { const p = path.join(UPLOADS_DIR, foto2); if (fs.existsSync(p)) fs.unlinkSync(p); }
+      foto2 = req.files.foto2[0].filename;
+    } else if (b.removePhoto2 === '1') {
+      if (foto2) { const p = path.join(UPLOADS_DIR, foto2); if (fs.existsSync(p)) fs.unlinkSync(p); }
+      foto2 = null;
+    }
+
     const r = await db.run_p(
       `UPDATE diario SET fecha=?,hora=?,responsable=?,servicio=?,unidad=?,
-         gps=?,colonia=?,calle=?,numero=?,actividades=?,observaciones=?,punto_tolva=?
+         gps=?,colonia=?,calle=?,numero=?,actividades=?,observaciones=?,punto_tolva=?,foto1=?,foto2=?
        WHERE id=?`,
       [ b.fecha||null, b.hora||null, b.responsable||null, b.servicio||null,
         b.unidad||null, b.gps||null, b.colonia||null, b.calle||null, b.numero||null,
-        b.actividades||null, b.observaciones||null, b.punto_tolva||null, req.params.id ]
+        b.actividades||null, b.observaciones||null, b.punto_tolva||null,
+        foto1, foto2, req.params.id ]
     );
     if (r.changes === 0) return res.status(404).json({ error: 'No encontrado' });
     const updated = await db.get_p('SELECT * FROM diario WHERE id = ?', [req.params.id]);

@@ -4070,6 +4070,26 @@ function _formDiario(r){
     <div class="form-group fg-span2"><label>Observaciones</label>
       <textarea id="ed-obs" rows="2">${r.observaciones||''}</textarea>
     </div>
+    <div class="form-group fg-span2"><label>Fotografías</label>
+      <div style="display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:4px;">
+        ${[['foto1','Antes'],['foto2','Después']].map(([fld,lbl]) => {
+          const actual = r[fld];
+          const thumb = actual
+            ? `<div style="margin-bottom:6px;">
+                 <img src="/uploads/${actual}" style="height:90px;border-radius:6px;object-fit:cover;border:1px solid var(--border);display:block;">
+                 <label style="display:block;margin-top:4px;font-size:11px;color:var(--yellow);cursor:pointer;">
+                   <input type="checkbox" id="ed-remove-${fld}"> Quitar foto actual
+                 </label>
+               </div>`
+            : `<p style="font-size:11px;color:var(--text-muted);margin:0 0 6px;">Sin foto</p>`;
+          return `<div>
+            <p style="font-size:11px;font-weight:600;margin:0 0 4px;color:var(--text-muted);">${lbl}</p>
+            ${thumb}
+            <input type="file" id="ed-new-${fld}" accept="image/*" style="font-size:12px;">
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
   </div>`;
 }
 
@@ -4100,20 +4120,26 @@ async function guardarEdicion(){
       await api('PUT', `/boletas/${id}`, body);
       renderBoletasRecientes();
     } else {
-      body = {
-        fecha:        document.getElementById('ed-fecha').value,
-        hora:         document.getElementById('ed-hora').value,
-        responsable:  document.getElementById('ed-responsable').value,
-        servicio:     document.getElementById('ed-servicio').value,
-        unidad:       document.getElementById('ed-unidad').value,
-        gps:          document.getElementById('ed-gps').value,
-        colonia:      document.getElementById('ed-colonia').value,
-        calle:        document.getElementById('ed-calle').value,
-        numero:       document.getElementById('ed-numero').value,
-        actividades:  document.getElementById('ed-actividades').value,
-        observaciones:document.getElementById('ed-obs').value,
-      };
-      await api('PUT', `/diario/${id}`, body);
+      const fd = new FormData();
+      fd.append('fecha',         document.getElementById('ed-fecha').value);
+      fd.append('hora',          document.getElementById('ed-hora').value);
+      fd.append('responsable',   document.getElementById('ed-responsable').value);
+      fd.append('servicio',      document.getElementById('ed-servicio').value);
+      fd.append('unidad',        document.getElementById('ed-unidad').value || '');
+      fd.append('gps',           document.getElementById('ed-gps').value || '');
+      fd.append('colonia',       document.getElementById('ed-colonia').value);
+      fd.append('calle',         document.getElementById('ed-calle').value || '');
+      fd.append('numero',        document.getElementById('ed-numero').value || '');
+      fd.append('actividades',   document.getElementById('ed-actividades').value || '');
+      fd.append('observaciones', document.getElementById('ed-obs').value || '');
+      // Fotos
+      const nf1 = document.getElementById('ed-new-foto1')?.files[0];
+      const nf2 = document.getElementById('ed-new-foto2')?.files[0];
+      if (nf1) fd.append('foto1', nf1);
+      if (nf2) fd.append('foto2', nf2);
+      if (document.getElementById('ed-remove-foto1')?.checked) fd.append('removePhoto1', '1');
+      if (document.getElementById('ed-remove-foto2')?.checked) fd.append('removePhoto2', '1');
+      await api('PUT', `/diario/${id}`, fd, true);
       if(typeof renderDiarioTable === 'function') renderDiarioTable();
     }
     cerrarModal('modal-editor');
