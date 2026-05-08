@@ -4043,7 +4043,7 @@ function _formDiario(r){
     </div>
     <div class="form-group fg-span2"><label>Responsable CEA *</label>
       <select id="ed-responsable" required>
-        ${['Edgar Flores','Jorge Sanchez','Roberto Alvarado','Carlos González','Manuel García','Homero Elizalde','Heber Portillo'].map(n=>`<option${r.responsable===n?' selected':''}>${n}</option>`).join('')}
+        ${['Edgar Flores','Jorge Sanchez','Roberto Alvarado','Carlos González','Manuel García','Homero Elizalde','Heber Portillo','Miguel Vidaña'].map(n=>`<option${r.responsable===n?' selected':''}>${n}</option>`).join('')}
       </select>
     </div>
     <div class="form-group"><label>Tipo de Servicio *</label>
@@ -4997,7 +4997,10 @@ async function renderDiarioTable(){
       <td style="font-size:11px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.actividades||'—'}</td>
       <td style="white-space:nowrap;">${origenBadge(r)}</td>
       <td>${r.auditado?'<span class="badge b-blue">✓</span>':'<span class="badge b-gray">—</span>'}</td>
-      <td><button class="btn btn-outline btn-xs" onclick="exportDiarioPDFById(${r.id})">PDF</button></td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn-outline btn-xs" onclick="abrirEditor('diario',${r.id})" title="Editar"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-outline btn-xs" onclick="exportDiarioPDFById(${r.id})" title="PDF">PDF</button>
+      </td>
     </tr>`).join('')+'</tbody></table>';
   } catch(err){ cont.innerHTML='<div class="empty"><p>Error cargando diario</p></div>'; }
 }
