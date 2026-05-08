@@ -4848,7 +4848,6 @@ async function cargarActDiario(){
   const boxPunto = document.getElementById('d-box-punto-tolva');
   const selPunto = document.getElementById('d-punto-tolva');
   if (serv === 'Contenedores' || serv === 'Tolvas') {
-    document.getElementById('d-responsable').value = 'Miguel Vidaña';
     try {
       const { data: tolvas } = await api('GET', '/tolvas?estado=activo&limit=200');
       selPunto.innerHTML = '<option value="" disabled selected>Seleccione punto…</option>';
