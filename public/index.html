@@ -451,6 +451,15 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
 .inner-tab.active { background: var(--accent); color: #000; }
 .inner-panel { display: none; }
 .inner-panel.active { display: block; }
+/* ── PDF Viewer Modal ─────────────────────────────────────────── */
+#pdf-viewer-modal{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.pdf-viewer-inner{background:var(--card);border-radius:10px;width:92vw;max-width:960px;padding:1rem;display:flex;flex-direction:column;gap:.75rem;max-height:95vh;}
+#pdf-viewer-iframe{width:100%;height:78vh;border:none;border-radius:4px;background:#fff;}
+.pdf-viewer-actions{display:flex;gap:.75rem;justify-content:flex-end;flex-wrap:wrap;}
+/* ── Coordenadas manuales ─────────────────────────────────────── */
+.coords-manual{display:flex;gap:.5rem;align-items:center;margin-top:.4rem;}
+.coords-manual input{flex:1;font-size:.82rem;}
+.coords-manual button{white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -935,6 +944,10 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
         <input type="text" id="d-gps" placeholder="Ubica el pin en el mapa..." style="font-family:var(--font-mono);font-size:11px;" readonly>
         <button type="button" class="btn btn-green btn-sm" onclick="gpsMe()"><i class="fas fa-crosshairs"></i> GPS</button>
       </div>
+      <div class="coords-manual">
+        <input type="text" id="input-coords-diario" placeholder="lat, lng  ej: 25.5428, -103.4068">
+        <button type="button" class="btn btn-sm btn-secondary" onclick="irACoordsDiario()">📌 Ir</button>
+      </div>
       <div id="mapaDiario"></div>
       <div class="form-grid" style="margin-top:10px;">
         <div class="form-group">
@@ -1055,6 +1068,10 @@ input[type="checkbox"]{width:auto;accent-color:var(--accent);}
         <button type="button" class="btn btn-secondary" onclick="obtenerUbicacionInc()">
           📍 Obtener mi ubicación
         </button>
+        <div class="coords-manual" style="margin-top:.5rem;">
+          <input type="text" id="input-coords-inc" placeholder="lat, lng  ej: 25.5428, -103.4068">
+          <button type="button" class="btn btn-sm btn-secondary" onclick="irACoordsInc()">📌 Ir</button>
+        </div>
         <div id="inc-map" style="height:200px;margin-top:8px;border-radius:6px;display:none;"></div>
         <div id="inc-coords" style="margin-top:6px;font-size:12px;color:var(--text-muted);display:none;">
           <span id="inc-lat-lng"></span>
@@ -2567,6 +2584,67 @@ function toggleSidebar() {
   document.querySelector('.sidebar').classList.toggle('open');
   document.getElementById('sidebar-overlay').classList.toggle('open');
 }
+
+// ════ PDF VIEWER MODAL ════════════════════════════════════════════
+let _pdfBlobUrl = null, _pdfFilename = 'reporte.pdf';
+const _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+function abrirPdfViewer(blobUrl, filename) {
+  _pdfFilename = filename || 'reporte.pdf';
+  if (_isIOS) {
+    // Safari mobile no renderiza PDFs de blob en iframe — descarga directo
+    const a = document.createElement('a'); a.href = blobUrl; a.download = _pdfFilename; a.click();
+    URL.revokeObjectURL(blobUrl); return;
+  }
+  if (_pdfBlobUrl) URL.revokeObjectURL(_pdfBlobUrl);
+  _pdfBlobUrl = blobUrl;
+  document.getElementById('pdf-viewer-iframe').src = blobUrl;
+  document.getElementById('pdf-viewer-modal').style.display = 'flex';
+}
+function descargarPdfActual() {
+  if (!_pdfBlobUrl) return;
+  const a = document.createElement('a'); a.href = _pdfBlobUrl; a.download = _pdfFilename; a.click();
+}
+function cerrarPdfViewer() {
+  document.getElementById('pdf-viewer-modal').style.display = 'none';
+  document.getElementById('pdf-viewer-iframe').src = '';
+  if (_pdfBlobUrl) { URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl = null; }
+}
+async function html2pdfViewer(cfg, element) {
+  const fname = cfg.filename || 'reporte.pdf';
+  const doc = await html2pdf().set(cfg).from(element).toPdf().get('pdf');
+  abrirPdfViewer(doc.output('bloburl'), fname);
+}
+
+// ════ COORDENADAS MANUALES ════════════════════════════════════════
+function setUbicacionDiario(lat, lng) {
+  const ll = new L.LatLng(lat, lng);
+  markerD.setLatLng(ll); mapD.setView(ll, 16); updGPS(ll);
+}
+function irACoordsDiario() {
+  const raw = (document.getElementById('input-coords-diario').value || '').trim();
+  const parts = raw.split(',').map(s => parseFloat(s.trim()));
+  if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) {
+    alert('Formato inválido. Ejemplo: 25.5428, -103.4068'); return;
+  }
+  const [lat, lng] = parts;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    alert('Coordenadas fuera de rango. Lat: -90 a 90, Lng: -180 a 180'); return;
+  }
+  setUbicacionDiario(lat, lng);
+}
+function irACoordsInc() {
+  const raw = (document.getElementById('input-coords-inc').value || '').trim();
+  const parts = raw.split(',').map(s => parseFloat(s.trim()));
+  if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) {
+    alert('Formato inválido. Ejemplo: 25.5428, -103.4068'); return;
+  }
+  const [lat, lng] = parts;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    alert('Coordenadas fuera de rango. Lat: -90 a 90, Lng: -180 a 180'); return;
+  }
+  setIncUbicacion(lat, lng);
+}
 function closeSidebar() {
   document.querySelector('.sidebar').classList.remove('open');
   document.getElementById('sidebar-overlay').classList.remove('open');
@@ -3583,8 +3661,8 @@ async function subirReportePDFaDrive(reporteId, folio) {
       html2canvas: { scale:2, useCORS:true },
       jsPDF: { unit:'mm', format:'letter', orientation:'portrait' }
     };
-    await html2pdf().set(pdfCfg).from(document.getElementById('rcaPDF')).save();
-    flash('PDF del reporte descargado ✔');
+    await html2pdfViewer(pdfCfg, document.getElementById('rcaPDF'));
+    flash('PDF del reporte listo ✔');
   } catch(err) {
     flash('Error al generar el PDF: ' + (err.message || 'Error desconocido'), 'error');
   }
@@ -3631,12 +3709,12 @@ async function exportReportePDF(){
       sec.style.display = 'none';
     }
 
-    await html2pdf().set({
+    await html2pdfViewer({
       margin: [10,10,10,10],
       filename: `CEA_Reporte_${r.folio.replace(/\//g,'-')}.pdf`,
       html2canvas: { scale:2, useCORS:true },
       jsPDF: { unit:'mm', format:'letter', orientation:'portrait' }
-    }).from(document.getElementById('rcaPDF')).save();
+    }, document.getElementById('rcaPDF'));
 
     hideLoader();
   } catch(err) { hideLoader(); alert('Error al generar PDF: '+err.message); }
@@ -4636,7 +4714,7 @@ function exportarConciliacionPDF() {
     cells.forEach((c,i) => { doc.text(String(c), x+1, y+4, {maxWidth:colW[i]-2}); x+=colW[i]; });
     doc.setDrawColor(80,80,80); doc.rect(14, y, 262, 6); y += 7;
   });
-  doc.save(`Conciliacion_${_conciliPeriodo}_Senala.pdf`);
+  abrirPdfViewer(doc.output('bloburl'), `Conciliacion_${_conciliPeriodo}_Senala.pdf`);
 }
 
 // ── Historial ─────────────────────────────────────────────────────
@@ -5022,8 +5100,9 @@ async function buildDiarioPDF(d,img1,img2){
   }).from(document.getElementById('hojaPDF'));
 
   try {
-    await pdfWorker.save();
-    flash('PDF descargado ✔');
+    const _diarioPdfDoc = await pdfWorker.toPdf().get('pdf');
+    abrirPdfViewer(_diarioPdfDoc.output('bloburl'), filename);
+    flash('PDF listo ✔');
   } catch(err) {
     flash('Error al generar el PDF: ' + (err.message || 'Error'), 'error');
   }
@@ -5333,8 +5412,8 @@ async function exportAuditoriaPDF(folioParam){
   const pdfCfg = {margin:0,filename,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'letter',orientation:'portrait'}};
   showLoader('Generando PDF…');
   try {
-    await html2pdf().set(pdfCfg).from(document.getElementById('auditoriaPDF')).save();
-    flash('PDF de supervisión descargado ✔');
+    await html2pdfViewer(pdfCfg, document.getElementById('auditoriaPDF'));
+    flash('PDF de supervisión listo ✔');
   } catch(err) {
     flash('Error al generar el PDF: ' + (err.message || 'Error'), 'error');
   }
@@ -5579,7 +5658,7 @@ function descargarPDFActa(a){
   }
   const tp=doc.internal.getNumberOfPages();
   for(let p=1;p<=tp;p++){doc.setPage(p);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(150,150,150);doc.text(`Folio #${a.folio} · ${a.fecha||''} · Dirección de Limpieza · R. Ayuntamiento de Torreón`,ML,272);doc.text(`Página ${p} de ${tp}`,PW-MR,272,{align:'right'});doc.setTextColor(0,0,0);}
-  doc.save(`Acta_CEA_Folio_${a.folio}_${a.fecha||'2026'}.pdf`);
+  abrirPdfViewer(doc.output('bloburl'), `Acta_CEA_Folio_${a.folio}_${a.fecha||'2026'}.pdf`);
 }
 
 // ════ REUNIONES ════
@@ -5712,7 +5791,7 @@ function descargarPDFReunion(r){
   ['PRESIDENTE','SECRETARIO','POR LA CONCESIONARIA'].forEach((rol,i)=>{const x=ML+i*fw;doc.setLineWidth(0.3);doc.line(x+5,y,x+fw-5,y);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text(rol,x+fw/2,y+5,{align:'center'});doc.text('Nombre y Firma',x+fw/2,y+10,{align:'center'});});
   const tp=doc.internal.getNumberOfPages();
   for(let p=1;p<=tp;p++){doc.setPage(p);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(150,150,150);doc.text(`Reunión del Organismo Supervisor · ${r.fecha||'—'} · Dirección de Limpieza · R. Ayuntamiento de Torreón`,ML,272);doc.text(`Página ${p} de ${tp}`,PW-MR,272,{align:'right'});}
-  doc.save(`Acta_Reunion_OrgSupervisor_${r.fecha||'2026'}.pdf`);
+  abrirPdfViewer(doc.output('bloburl'), `Acta_Reunion_OrgSupervisor_${r.fecha||'2026'}.pdf`);
 }
 
 // ════ MULTAS ════
@@ -6215,7 +6294,7 @@ async function exportarPDFModulo(modulo, etiqueta, nombre, data, periodo) {
     doc.text(`${etiqueta}  ·  ${periodo}  ·  DGSPM Torreón`, ML, PH - 5);
     doc.text(`Página ${p} de ${tp}`, PW - MR, PH - 5, { align: 'right' });
   }
-  doc.save(`CEA_${nombre}_${new Date().toISOString().slice(0, 10)}.pdf`);
+  abrirPdfViewer(doc.output('bloburl'), `CEA_${nombre}_${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
 // Alias legacy
@@ -7188,7 +7267,7 @@ async function generarReporteEjecutivo() {
       }
     }
 
-    doc.save(`Reporte_Ejecutivo_CEA_${periodo}.pdf`);
+    abrirPdfViewer(doc.output('bloburl'), `Reporte_Ejecutivo_CEA_${periodo}.pdf`);
     flash('Reporte ejecutivo generado ✔');
   } catch(e) { alert('Error al generar reporte: ' + e.message); }
   hideLoader();
@@ -7546,7 +7625,7 @@ async function imprimirOrden(id) {
     doc.setFontSize(6.5); doc.setTextColor(160,160,160); doc.setFont('helvetica','normal');
     doc.text(`Generado: ${new Date().toLocaleString('es-MX')} · Sistema CEA · DGSPM Torreón`, PW/2, 272, {align:'center'});
 
-    doc.save(`OT-${r.folio.replace(/\//g,'-')}.pdf`);
+    abrirPdfViewer(doc.output('bloburl'), `OT-${r.folio.replace(/\//g,'-')}.pdf`);
   } catch(e) { flash('Error al generar PDF: ' + e.message); console.error(e); }
 }
 
@@ -7782,7 +7861,7 @@ async function imprimirComprobacion(){
           r.veredicto||'—', r.zona||'—']
     );
 
-    doc.save(`comprobacion-cea-${ini}-${fin}.pdf`);
+    abrirPdfViewer(doc.output('bloburl'), `comprobacion-cea-${ini}-${fin}.pdf`);
     cerrarModal('modal-comprobacion');
     flash('PDF generado correctamente');
   } catch(e){
@@ -8171,5 +8250,15 @@ async function eliminarIncidencia(id) {
   </div>
 </div>
 
+<!-- ── PDF Viewer Modal ──────────────────────────────────────── -->
+<div id="pdf-viewer-modal" style="display:none;">
+  <div class="pdf-viewer-inner">
+    <iframe id="pdf-viewer-iframe" src=""></iframe>
+    <div class="pdf-viewer-actions">
+      <button class="btn btn-sm btn-secondary" onclick="descargarPdfActual()"><i class="fas fa-download"></i> Descargar</button>
+      <button class="btn btn-sm" onclick="cerrarPdfViewer()"><i class="fas fa-times"></i> Cerrar</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
